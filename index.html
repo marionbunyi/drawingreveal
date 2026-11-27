@@ -1,654 +1,301 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Picnic Draw & Reveal</title>
-
+<title>Draw & Reveal - Seasons Game</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  color:#26334a;
-  background:#dff6ff url("https://raw.githubusercontent.com/marionbunyi/picnic/main/picnic%20background.jpg") center/cover fixed;
-}
-header{
-  background:linear-gradient(90deg,#ffcf5c,#ff8f9e,#65d8d0,#84b8ff);
-  padding:20px 130px 18px 15px;
-  text-align:center;
-  position:relative;
-  border-bottom:4px solid white;
-}
+body{margin:0;font-family:Arial,sans-serif;color:#26334a;background:#dff6ff url("background%20photo.png") center/cover fixed}
+header{background:linear-gradient(90deg,#ffcf5c,#ff8f9e,#65d8d0,#84b8ff);padding:20px 130px 18px 15px;text-align:center;position:relative;border-bottom:4px solid white}
 header h1{margin:0;font-size:clamp(25px,4vw,38px)}
 header p{margin:6px 0 0}
-#soundBtn{
-  position:absolute;
-  right:12px;
-  top:12px;
-  background:white;
-  color:#34445e;
-}
+#soundBtn{position:absolute;right:12px;top:12px;background:white;color:#34445e}
 .container{max-width:1100px;margin:auto;padding:18px}
-.panel{
-  background:rgba(255,255,255,.96);
-  border:3px solid white;
-  border-radius:20px;
-  padding:20px;
-  margin-bottom:16px;
-  box-shadow:0 8px 22px rgba(42,80,115,.14);
-}
+.panel{background:rgba(255,255,255,.96);border:3px solid white;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 8px 22px rgba(42,80,115,.14)}
 .hidden{display:none!important}
-button{
-  border:0;
-  border-radius:12px;
-  padding:13px 18px;
-  margin:5px;
-  background:#5687ff;
-  color:white;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  touch-action:manipulation;
-}
+button{border:0;border-radius:12px;padding:13px 18px;margin:5px;background:#5687ff;color:white;font-size:15px;font-weight:bold;cursor:pointer;touch-action:manipulation}
 button:disabled{opacity:.45;cursor:not-allowed}
 button.green{background:#20b883}
 button.gray{background:#7893b4}
 button.orange{background:#ff9c42}
 button.red{background:#f06480}
 button.purple{background:#8974df}
-input{
-  width:100%;
-  padding:12px;
-  border:2px solid #dce1ec;
-  border-radius:9px;
-  font-size:16px;
-  margin:7px 0;
-}
+input{width:100%;padding:12px;border:2px solid #dce1ec;border-radius:9px;font-size:16px;margin:7px 0}
 label{font-weight:bold;display:block;margin-top:10px}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.role-card{
-  padding:25px 15px;
-  border-radius:18px;
-  text-align:center;
-  cursor:pointer;
-  border:3px solid white;
-  color:#26334a;
-  background:linear-gradient(135deg,#fff4b8,#ffd8e8);
-  box-shadow:0 6px 14px rgba(35,50,75,.12);
-}
+.role-card{padding:25px 15px;border-radius:18px;text-align:center;cursor:pointer;border:3px solid white;color:#26334a;background:linear-gradient(135deg,#fff4b8,#ffd8e8);box-shadow:0 6px 14px rgba(35,50,75,.12)}
 .role-card:nth-child(2){background:linear-gradient(135deg,#c7f7e7,#dce9ff)}
 .role-card:hover{border-color:#ffb94e}
-.role-card img{
-  height:160px;
-  max-width:100%;
-  object-fit:contain;
-  display:block;
-  margin:auto auto 10px;
-}
-.chinese{
-  display:block;
-  font-size:13px;
-  color:#718096;
-  font-weight:normal;
-  margin-top:4px;
-  line-height:1.4;
-}
-.small-chinese{
-  display:block;
-  font-size:12px;
-  color:#dcecff;
-  margin-top:5px;
-  font-weight:normal;
-  line-height:1.4;
-}
-.status{
-  background:#e3f6ff;
-  padding:12px;
-  border-radius:10px;
-  margin:10px 0;
-  overflow-wrap:anywhere;
-}
-.room-code{
-  text-align:center;
-  font-size:clamp(32px,7vw,48px);
-  font-weight:bold;
-  letter-spacing:7px;
-  color:#5687ff;
-}
+.role-card img{height:160px;max-width:100%;object-fit:contain;display:block;margin:auto auto 10px}
+.chinese{display:block;font-size:13px;color:#718096;font-weight:normal;margin-top:4px;line-height:1.4}
+.small-chinese{display:block;font-size:12px;color:#dcecff;margin-top:5px;font-weight:normal;line-height:1.4}
+.status{background:#e3f6ff;padding:12px;border-radius:10px;margin:10px 0;overflow-wrap:anywhere}
+.room-code{text-align:center;font-size:clamp(32px,7vw,48px);font-weight:bold;letter-spacing:7px;color:#5687ff}
 .stats{display:flex;gap:12px;flex-wrap:wrap}
 .stat{background:#eaf3ff;padding:12px;border-radius:10px}
-.prompt{
-  font-size:clamp(20px,3vw,27px);
-  font-weight:bold;
-  text-align:center;
-  background:#fff3b8;
-  color:#3b4660;
-  padding:16px;
-  border-radius:12px;
-}
-.round-pill{
-  background:#d7fff0;
-  color:#167b6c;
-  border-radius:999px;
-  padding:9px 15px;
-  display:inline-block;
-  font-weight:bold;
-  margin:8px 0;
-}
-.timer{
-  font-size:44px;
-  font-weight:bold;
-  text-align:center;
-  color:#ff705f;
-  font-variant-numeric:tabular-nums;
-}
+.prompt{font-size:clamp(20px,3vw,27px);font-weight:bold;text-align:center;background:#fff3b8;color:#3b4660;padding:16px;border-radius:12px}
+.season-pill{background:#d7fff0;color:#167b6c;border-radius:999px;padding:9px 15px;display:inline-block;font-weight:bold;margin:8px 0}
+.timer{font-size:44px;font-weight:bold;text-align:center;color:#ff705f;font-variant-numeric:tabular-nums}
 .small{font-size:13px;color:#607080}
 .teacher-actions{display:flex;flex-wrap:wrap;gap:8px}
 .teacher-actions button{flex:1;min-width:140px}
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:14px;
-  margin-top:15px;
-}
-.drawing-card{
-  border:2px solid #e0e4ef;
-  border-radius:12px;
-  overflow:hidden;
-  background:white;
-  text-align:center;
-  color:#26334a;
-}
-.drawing-card img{
-  width:100%;
-  display:block;
-  background:white;
-  object-fit:contain;
-}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:15px}
+.drawing-card{border:2px solid #e0e4ef;border-radius:12px;overflow:hidden;background:white;text-align:center;color:#26334a}
+.drawing-card img{width:100%;display:block;background:white;object-fit:contain}
 .drawing-card p{font-weight:bold;padding:9px;margin:0}
-#canvas{
-  width:100%;
-  height:360px;
-  border:3px solid #80d8ee;
-  border-radius:12px;
-  background:white;
-  touch-action:none;
-  display:block;
-  cursor:crosshair;
-  user-select:none;
-  -webkit-user-select:none;
-}
+#canvas{width:100%;height:360px;border:3px solid #80d8ee;border-radius:12px;background:white;touch-action:none;display:block;cursor:crosshair;user-select:none;-webkit-user-select:none}
 .canvas-wrap{position:relative}
-.toolbar{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:8px;
-  margin:10px 0;
-}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
 .toolbar input[type=color]{width:55px;height:43px;padding:2px}
 .toolbar input[type=range]{width:110px}
 .tool-active{outline:4px solid #f6c744;outline-offset:1px}
 
-/* Ready screen */
-.ready-overlay{
-  position:absolute;
-  inset:3px;
-  border-radius:10px;
-  background:#ffe58a;
-  color:#34445e;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:15px;
-  z-index:2;
-  pointer-events:none;
-}
-.ready-overlay h2{
-  font-size:clamp(35px,8vw,70px);
-  margin:0 0 10px;
-}
+/* READY is a steady screen before the round starts. */
+.ready-overlay{position:absolute;inset:3px;border-radius:10px;background:#ffe58a;color:#34445e;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:15px;z-index:2;pointer-events:none}
+.ready-overlay h2{font-size:clamp(35px,8vw,70px);margin:0 0 10px}
 .ready-overlay p{font-size:clamp(18px,3vw,25px);margin:8px}
 
-/* Static Hands Up screen */
-.hands-overlay{
-  position:absolute;
-  inset:3px;
-  border-radius:10px;
-  background:#315b85;
-  color:white;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:15px;
-  z-index:3;
-}
-.hands-overlay h2{
-  font-size:clamp(35px,8vw,70px);
-  margin:0 0 10px;
-}
+/* HANDS UP is a solid, non-flashing cover. */
+.hands-overlay{position:absolute;inset:3px;border-radius:10px;background:#315b85;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:15px;z-index:3}
+.hands-overlay h2{font-size:clamp(35px,8vw,70px);margin:0 0 10px}
 .hands-overlay p{font-size:clamp(18px,3vw,25px);margin:8px}
 .hands-overlay .small-chinese{font-size:13px}
 #message{text-align:center;font-weight:bold;padding:10px}
-
-/* Video clue screen */
-#videoScreen{
-  position:fixed;
-  inset:0;
-  z-index:9000;
-  background:#101827;
-  color:white;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-}
-#videoScreen.hidden{display:none!important}
-#clueVideo{
-  width:100%;
-  height:calc(100% - 85px);
-  object-fit:contain;
-  background:#000;
-}
-.video-controls{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px;
-  padding-top:8px;
-}
-.video-controls button{min-width:150px}
-
-/* Fullscreen gallery */
-#revealScreen{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:#263b59;
-  color:white;
-  padding:15px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-}
+#revealScreen{position:fixed;inset:0;z-index:9999;background:#263b59;color:white;padding:15px;overflow-y:auto;display:flex;flex-direction:column}
 #revealScreen.hidden{display:none!important}
-.reveal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:12px;
-}
+.reveal-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .reveal-header h2{margin:0}
-#fullscreenGallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));
-  gap:16px;
-  align-items:start;
-}
-#fullscreenGallery .drawing-card img{
-  width:100%;
-  height:auto;
-  max-height:65vh;
-  object-fit:contain;
-  background:white;
-}
+#fullscreenGallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px;align-items:start}
+#fullscreenGallery .drawing-card img{width:100%;height:auto;max-height:65vh;object-fit:contain;background:white}
 #fullscreenGallery .drawing-card p{font-size:20px;padding:12px}
 .reveal-empty{text-align:center;font-size:22px;padding:40px 10px}
-
 @media(max-width:600px){
-  .role-grid{grid-template-columns:1fr}
-  #canvas{height:330px}
-  .container{padding:10px}
-  .panel{padding:15px}
-  #fullscreenGallery{grid-template-columns:1fr}
-  #fullscreenGallery .drawing-card img{max-height:55vh}
-  header{padding-right:115px}
-  .video-controls button{min-width:120px}
+.role-grid{grid-template-columns:1fr}
+#canvas{height:330px}
+.container{padding:10px}
+.panel{padding:15px}
+#fullscreenGallery{grid-template-columns:1fr}
+#fullscreenGallery .drawing-card img{max-height:55vh}
 }
 </style>
 </head>
-
 <body>
-
 <header>
-  <h1>🧺 LET'S HAVE A PICNIC!</h1>
-  <p>Watch the clue. Draw it. Reveal it!</p>
-  <button id="soundBtn" onclick="toggleSound()">🔇 MUSIC OFF</button>
+<h1>🎨 DRAW & REVEAL</h1>
+<p>Draw it. Submit it. Reveal it!</p>
+<button id="soundBtn" onclick="toggleSound()">🔇 MUSIC OFF</button>
 </header>
-
 <div class="container">
+<section id="home" class="panel">
+<h2 style="text-align:center">Welcome!</h2>
+<p style="text-align:center">Choose your role.</p>
+<div class="role-grid">
+<div class="role-card" onclick="showTeacher()">
+<img src="teacher.png" alt="Teacher">
+<h2>TEACHER<span class="chinese">教師</span></h2>
+</div>
+<div class="role-card" onclick="showStudent()">
+<img src="student.png" alt="Student">
+<h2>STUDENT<span class="chinese">學生</span></h2>
+</div>
+</div>
+</section>
 
-  <!-- HOME -->
-  <section id="home" class="panel">
-    <h2 style="text-align:center">Welcome!</h2>
-    <p style="text-align:center">Choose your role.</p>
+<section id="teacherSetup" class="panel hidden">
+<h2>👩‍🏫 Teacher Dashboard</h2>
+<span class="chinese">教師控制台</span>
+<div id="firebaseStatus" class="status">Connecting to Firebase...</div>
+<button class="green" onclick="createRoom()" id="createBtn">CREATE NEW ROOM</button>
+<button class="gray" onclick="goHome()">🏠 HOME</button>
+</section>
 
-    <div class="role-grid">
-      <div class="role-card" onclick="showTeacher()">
-        <img src="https://raw.githubusercontent.com/marionbunyi/picnic/main/teacher.png" alt="Teacher">
-        <h2>TEACHER<span class="chinese">教師</span></h2>
-      </div>
-
-      <div class="role-card" onclick="showStudent()">
-        <img src="https://raw.githubusercontent.com/marionbunyi/picnic/main/student.png" alt="Student">
-        <h2>STUDENT<span class="chinese">學生</span></h2>
-      </div>
-    </div>
-  </section>
-
-  <!-- TEACHER SETUP -->
-  <section id="teacherSetup" class="panel hidden">
-    <h2>👩‍🏫 Teacher Dashboard</h2>
-    <span class="chinese">教師控制台</span>
-
-    <div id="firebaseStatus" class="status">Connecting to Firebase...</div>
-
-    <button class="green" onclick="createRoom()" id="createBtn">CREATE NEW ROOM</button>
-    <button class="gray" onclick="goHome()">🏠 HOME</button>
-  </section>
-
-  <!-- TEACHER ROOM -->
-  <section id="teacherRoom" class="hidden">
-
-    <div class="panel">
-      <h2>🎯 Your Room</h2>
-      <p>Students, enter this room code:</p>
-      <div class="room-code" id="roomCode">------</div>
-
-      <button class="gray" onclick="copyRoomCode()">COPY ROOM CODE</button>
-      <button class="purple" onclick="toggleSettings()">⚙️ SETTINGS</button>
-      <button class="gray" onclick="goHome()">🏠 HOME</button>
-
-      <div id="teacherStatus" class="status">Waiting for students...</div>
-
-      <div class="stats">
-        <div class="stat">Students: <strong id="studentCount">0</strong></div>
-        <div class="stat">Submitted: <strong id="drawingCount">0</strong></div>
-        <div class="stat">Round: <strong id="roundNumber">0 / 9</strong></div>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div id="settingsPanel" class="panel hidden">
-      <h2>⚙️ Timer Settings</h2>
-
-      <label>Minutes</label>
-      <input id="durationMinutes" type="number" min="0" max="99" value="1">
-
-      <label>Seconds</label>
-      <input id="durationSeconds" type="number" min="0" max="59" value="0">
-
-      <p class="small">This timer will be used for every round.</p>
-
-      <button class="green" onclick="saveSettings()">SAVE TIMER</button>
-      <button class="gray" onclick="toggleSettings()">CLOSE</button>
-    </div>
-
-    <!-- PICNIC GAME CONTROLS -->
-    <div class="panel">
-      <h2>🧺 Picnic Drawing Challenge</h2>
-
-      <div class="round-pill" id="teacherRound">Ready to begin</div>
-
-      <div class="prompt" id="teacherPrompt">
-        Press NEXT VIDEO CLUE to begin!
-      </div>
-
-      <div class="timer" id="teacherTimer">01:00</div>
-
-      <div class="teacher-actions">
-        <button class="purple" id="nextClueBtn" onclick="nextClue()">▶ NEXT VIDEO CLUE</button>
-        <button class="green" id="startDrawingBtn" onclick="startDrawing()" disabled>✏️ START DRAWING</button>
-        <button class="orange" id="stopBtn" onclick="stopRound()" disabled>⏹ STOP TIMER</button>
-      </div>
-
-      <p class="small">
-        1. Click NEXT VIDEO CLUE.
-        2. Play or replay the video.
-        3. Click BACK TO DRAWING.
-        4. Click START DRAWING when students are ready.
-      </p>
-    </div>
-
-    <!-- GALLERY -->
-    <div class="panel">
-      <h2>🖼️ Drawing Gallery</h2>
-
-      <button class="green" onclick="revealDrawings()">REVEAL ALL DRAWINGS</button>
-      <button class="gray" onclick="hideDrawings()">HIDE DRAWINGS</button>
-      <button class="red" onclick="clearRoundDrawings()">CLEAR DRAWINGS</button>
-
-      <div id="gallery" class="gallery"></div>
-    </div>
-
-  </section>
-
-  <!-- STUDENT SETUP -->
-  <section id="studentSetup" class="panel hidden">
-    <h2>✏️ Join the Picnic Game</h2>
-
-    <div id="studentFirebaseStatus" class="status">Connecting to Firebase...</div>
-
-    <label>Your name or team name</label>
-    <input id="studentName" placeholder="Enter your name">
-
-    <label>Room code</label>
-    <input id="joinCode" placeholder="Enter room code" maxlength="6" style="text-transform:uppercase">
-
-    <button class="green" onclick="joinRoom()" id="joinBtn">JOIN ROOM</button>
-    <button class="gray" onclick="goHome()">🏠 HOME</button>
-  </section>
-
-  <!-- STUDENT DRAWING -->
-  <section id="studentDrawing" class="hidden">
-    <div class="panel">
-      <h2>🎨 Let's Draw!</h2>
-
-      <button class="gray" onclick="studentGoHome()">🏠 HOME</button>
-
-      <div id="studentStatus" class="status">Waiting for teacher...</div>
-
-      <div class="round-pill" id="studentRound">Waiting for the next round</div>
-
-      <div class="prompt" id="studentPrompt">
-        Watch the screen and get ready!
-      </div>
-
-      <div class="timer" id="studentTimer">01:00</div>
-
-      <div class="canvas-wrap">
-        <canvas id="canvas"></canvas>
-
-        <div id="readyOverlay" class="ready-overlay">
-          <h2>READY!</h2>
-          <p>準備好了！</p>
-          <p>Wait for your teacher to start.</p>
-        </div>
-
-        <div id="handsOverlay" class="hands-overlay hidden">
-          <h2>🙌 HANDS UP!</h2>
-          <p>Your drawing is submitted.
-            <span class="small-chinese">你的圖畫已提交。</span>
-          </p>
-          <p>Wait for the teacher.
-            <span class="small-chinese">請等待老師。</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <label>Color</label>
-        <input type="color" id="color" value="#222222">
-
-        <label>Brush</label>
-        <input type="range" id="brush" min="2" max="30" value="6">
-
-        <button id="pencilBtn" class="purple tool-active" onclick="setTool('pencil')">✏️ PENCIL</button>
-        <button id="eraserBtn" class="gray" onclick="setTool('eraser')">🧽 ERASER</button>
-        <button class="gray" onclick="clearCanvas()">CLEAR ALL</button>
-        <button class="orange" onclick="undoDrawing()">UNDO</button>
-      </div>
-
-      <button class="green" onclick="submitDrawing()" id="submitBtn" disabled>SUBMIT DRAWING</button>
-
-      <div id="message"></div>
-    </div>
-  </section>
-
+<section id="teacherRoom" class="hidden">
+<div class="panel">
+<h2>🎯 Your Room</h2>
+<p>Students, enter this room code:</p>
+<div class="room-code" id="roomCode">------</div>
+<button class="gray" onclick="copyRoomCode()">COPY ROOM CODE</button>
+<button class="purple" onclick="toggleSettings()">⚙️ SETTINGS</button>
+<button class="gray" onclick="goHome()">🏠 HOME</button>
+<div id="teacherStatus" class="status">Waiting for students...</div>
+<div class="stats">
+<div class="stat">Students: <strong id="studentCount">0</strong></div>
+<div class="stat">Submitted: <strong id="drawingCount">0</strong></div>
+<div class="stat">Round: <strong id="roundNumber">0 / 5</strong></div>
+</div>
 </div>
 
-<!-- FULLSCREEN VIDEO CLUE -->
-<div id="videoScreen" class="hidden">
-  <video id="clueVideo" playsinline preload="auto"></video>
-
-  <div class="video-controls">
-    <button class="orange" onclick="replayVideo()">↻ REPLAY VIDEO</button>
-    <button class="green" onclick="backToDrawing()">BACK TO DRAWING</button>
-  </div>
+<div id="settingsPanel" class="panel hidden">
+<h2>⚙️ Timer Settings</h2>
+<label>Minutes</label>
+<input id="durationMinutes" type="number" min="0" max="99" value="1">
+<label>Seconds</label>
+<input id="durationSeconds" type="number" min="0" max="59" value="0">
+<p class="small">This timer will be used for every round.</p>
+<button class="green" onclick="saveSettings()">SAVE TIMER</button>
+<button class="gray" onclick="toggleSettings()">CLOSE</button>
 </div>
 
-<!-- FULLSCREEN REVEAL -->
+<div class="panel">
+<h2>🍃 Seasons Challenge</h2>
+<div class="season-pill" id="teacherSeason">Ready to begin</div>
+<div class="prompt" id="teacherPrompt">Press START SEASONS GAME</div>
+<div class="timer" id="teacherTimer">01:00</div>
+<div class="teacher-actions">
+<button class="green" id="advanceBtn" onclick="advanceQuestion()">▶ START SEASONS GAME</button>
+<button class="orange" onclick="stopRound()" id="stopBtn" disabled>⏹ STOP TIMER</button>
+</div>
+<p class="small">Click NEXT QUESTION to move to the next season.</p>
+</div>
+
+<div class="panel">
+<h2>🖼️ Drawing Gallery</h2>
+<button class="green" onclick="revealDrawings()">REVEAL ALL DRAWINGS</button>
+<button class="gray" onclick="hideDrawings()">HIDE DRAWINGS</button>
+<button class="red" onclick="clearRoundDrawings()">CLEAR DRAWINGS</button>
+<div id="gallery" class="gallery"></div>
+</div>
+</section>
+
+<section id="studentSetup" class="panel hidden">
+<h2>✏️ Join the Drawing Room</h2>
+<label>Your name or team name</label>
+<input id="studentName" placeholder="Enter your name">
+<label>Room code</label>
+<input id="joinCode" placeholder="Enter room code" maxlength="6" style="text-transform:uppercase">
+<button class="green" onclick="joinRoom()">JOIN ROOM</button>
+<button class="gray" onclick="goHome()">🏠 HOME</button>
+</section>
+
+<section id="studentDrawing" class="hidden">
+<div class="panel">
+<h2>🎨 Let's Draw!</h2>
+<button class="gray" onclick="studentGoHome()">🏠 HOME</button>
+<div id="studentStatus" class="status">Waiting for teacher...</div>
+<div class="season-pill" id="studentSeason">Waiting for season</div>
+<div class="prompt" id="studentPrompt">Join a room to begin.</div>
+<div class="timer" id="studentTimer">01:00</div>
+<div class="canvas-wrap">
+<canvas id="canvas"></canvas>
+<div id="readyOverlay" class="ready-overlay">
+<h2>READY!</h2>
+<p>準備好了！</p>
+</div>
+<div id="handsOverlay" class="hands-overlay hidden">
+<h2>🙌 HANDS UP!</h2>
+<p>Your drawing is submitted.<span class="small-chinese">你的圖畫已提交。</span></p>
+<p>Wait for the teacher.<span class="small-chinese">請等待老師。</span></p>
+</div>
+</div>
+<div class="toolbar">
+<label>Color</label>
+<input type="color" id="color" value="#222222">
+<label>Brush</label>
+<input type="range" id="brush" min="2" max="30" value="6">
+<button id="pencilBtn" class="purple tool-active" onclick="setTool('pencil')">✏️ PENCIL</button>
+<button id="eraserBtn" class="gray" onclick="setTool('eraser')">🧽 ERASER</button>
+<button class="gray" onclick="clearCanvas()">CLEAR ALL</button>
+<button class="orange" onclick="undoDrawing()">UNDO</button>
+</div>
+<button class="green" onclick="submitDrawing()" id="submitBtn" disabled>SUBMIT DRAWING</button>
+<div id="message"></div>
+</div>
+</section>
+</div>
+
 <div id="revealScreen" class="hidden">
-  <div class="reveal-header">
-    <h2>🎉 DRAWING REVEAL!</h2>
-    <button class="red" onclick="closeReveal()">✖ CLOSE</button>
-  </div>
-
-  <div id="fullscreenGallery"></div>
+<div class="reveal-header">
+<h2>🎉 DRAWING REVEAL!</h2>
+<button class="red" onclick="closeReveal()">✖ CLOSE</button>
+</div>
+<div id="fullscreenGallery"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
 <script>
-
-// ==========================================
 // BACKGROUND MUSIC
-// ==========================================
-
 let musicContext=null;
 let musicTimer=null;
 let musicOn=false;
 let musicStep=0;
-
 function playSoftTone(){
-  if(!musicContext||!musicOn)return;
-
-  const notes=[523.25,659.25,587.33,783.99,659.25,523.25,587.33,659.25];
-  const now=musicContext.currentTime;
-
-  const osc=musicContext.createOscillator();
-  const gain=musicContext.createGain();
-
-  osc.type="sine";
-  osc.frequency.value=notes[musicStep%notes.length];
-
-  gain.gain.setValueAtTime(0.0001,now);
-  gain.gain.exponentialRampToValueAtTime(0.035,now+0.06);
-  gain.gain.exponentialRampToValueAtTime(0.0001,now+0.48);
-
-  osc.connect(gain);
-  gain.connect(musicContext.destination);
-
-  osc.start(now);
-  osc.stop(now+0.5);
-
-  musicStep++;
+if(!musicContext||!musicOn)return;
+const notes=[523.25,659.25,587.33,783.99,659.25,523.25,587.33,659.25];
+const now=musicContext.currentTime;
+const osc=musicContext.createOscillator();
+const gain=musicContext.createGain();
+osc.type="sine";
+osc.frequency.value=notes[musicStep%notes.length];
+gain.gain.setValueAtTime(0.0001,now);
+gain.gain.exponentialRampToValueAtTime(0.035,now+0.06);
+gain.gain.exponentialRampToValueAtTime(0.0001,now+0.48);
+osc.connect(gain);
+gain.connect(musicContext.destination);
+osc.start(now);
+osc.stop(now+0.5);
+musicStep++;
 }
-
 function toggleSound(){
-  musicOn=!musicOn;
-
-  if(musicOn){
-    try{
-      musicContext=musicContext||new (window.AudioContext||window.webkitAudioContext)();
-      musicContext.resume();
-      playSoftTone();
-      musicTimer=setInterval(playSoftTone,520);
-      $("soundBtn").textContent="🔊 MUSIC ON";
-    }catch(e){
-      musicOn=false;
-      $("soundBtn").textContent="🔇 MUSIC OFF";
-      alert("Sound is not available on this device/browser.");
-    }
-  }else{
-    clearInterval(musicTimer);
-    musicTimer=null;
-    $("soundBtn").textContent="🔇 MUSIC OFF";
-  }
+musicOn=!musicOn;
+if(musicOn){
+try{
+musicContext=musicContext||new (window.AudioContext||window.webkitAudioContext)();
+musicContext.resume();
+playSoftTone();
+musicTimer=setInterval(playSoftTone,520);
+$("soundBtn").textContent="🔊 MUSIC ON";
+}catch(e){
+musicOn=false;
+$("soundBtn").textContent="🔇 MUSIC OFF";
+alert("Sound is not available on this device/browser.");
+}
+}else{
+clearInterval(musicTimer);
+musicTimer=null;
+$("soundBtn").textContent="🔇 MUSIC OFF";
+}
 }
 
-
-// ==========================================
 // FIREBASE CONFIGURATION
-// Same configuration as the working Seasons game
-// ==========================================
-
 const firebaseConfig={
-  apiKey:"AIzaSyCQso3C3mYX8n9OPt0ReBCkiX9pMg9YxE34",
-  authDomain:"drawing-reveal.firebaseapp.com",
-  databaseURL:"https://drawing-reveal-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"drawing-reveal",
-  storageBucket:"drawing-reveal.firebasestorage.app",
-  messagingSenderId:"120401215529",
-  appId:"1:120401215529:web:a3f17cb8fe0c6ea8765c38",
-  measurementId:"G-NFWGH0J75B"
+apiKey:"AIzaSyCQsoC3mYX8n9OPt0ReBCkiX9pMg9YxE34",
+authDomain:"drawing-reveal.firebaseapp.com",
+databaseURL:"https://drawing-reveal-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"drawing-reveal",
+storageBucket:"drawing-reveal.firebasestorage.app",
+messagingSenderId:"120401215529",
+appId:"1:120401215529:web:a3f17cb8fe0c6ea8765c38",
+measurementId:"G-NFWGH0J75B"
 };
 
-
-// ==========================================
-// PICNIC VIDEO SEQUENCE
-// Names are not displayed anywhere in the game.
-// ==========================================
-
-const videoClues=[
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/fork.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/spoon.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/plate.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/sandwich.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/pizza.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/fried%20chicken.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/french%20fries.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/cookies.mp4",
-  "https://raw.githubusercontent.com/marionbunyi/picnic/main/water.mp4"
+// SEASONS
+const seasons=[
+{name:"WINTER",chinese:"冬天",prompt:"Draw something about winter!",translation:"畫一些與冬天有關的東西！"},
+{name:"SPRING",chinese:"春天",prompt:"Draw something about spring!",translation:"畫一些與春天有關的東西！"},
+{name:"SUMMER",chinese:"夏天",prompt:"Draw something about summer!",translation:"畫一些與夏天有關的東西！"},
+{name:"FALL",chinese:"秋天",prompt:"Draw something about fall!",translation:"畫一些與秋天有關的東西！"},
+{name:"FAVORITE SEASON",chinese:"最喜歡的季節",prompt:"Draw your favorite season!",translation:"畫出你最喜歡的季節！"}
 ];
 
-
-// ==========================================
 // GAME VARIABLES
-// ==========================================
-
 let db=null;
 let room="";
 let studentId="";
 let studentName="";
-
 let revealed=false;
 let roundEndsAt=0;
 let timerInterval=null;
 
+// Firebase server-time synchronization.
 let serverTimeOffset=0;
 let serverTimeReady=false;
 let resolveServerTimeReady;
-
-const serverTimeReadyPromise=new Promise(resolve=>{
-  resolveServerTimeReady=resolve;
-});
-
-function serverNow(){
-  return Date.now()+serverTimeOffset;
-}
-
+const serverTimeReadyPromise=new Promise(resolve=>{resolveServerTimeReady=resolve;});
+function serverNow(){return Date.now()+serverTimeOffset;}
 let endingRound=false;
+
 let drawing=false;
 let history=[];
 let roundActive=false;
@@ -657,1117 +304,544 @@ let currentDuration=60;
 let submitted=false;
 let autoSubmitted=false;
 let tool="pencil";
-
 let roundIndex=-1;
-let clueIndex=-1;
 let roundId=0;
 let studentReady=false;
 let lastRoundActive=false;
-
 const $=id=>document.getElementById(id);
 
-
-// ==========================================
 // PAGE NAVIGATION
-// ==========================================
-
 function showPage(id){
-  ["home","teacherSetup","teacherRoom","studentSetup","studentDrawing"].forEach(p=>{
-    $(p).classList.add("hidden");
-  });
-
-  $(id).classList.remove("hidden");
+["home","teacherSetup","teacherRoom","studentSetup","studentDrawing"].forEach(p=>{
+$(p).classList.add("hidden");
+});
+$(id).classList.remove("hidden");
 }
-
-function goHome(){
-  showPage("home");
-}
-
+function goHome(){showPage("home");}
 function studentGoHome(){
-  if(db&&room&&studentId){
-    db.ref(`rooms/${room}/students/${studentId}`).remove().catch(()=>{});
-  }
-
-  studentId="";
-  studentName="";
-  showPage("home");
+if(db&&room&&studentId)db.ref(`rooms/${room}/students/${studentId}`).remove().catch(()=>{});
+studentId="";
+studentName="";
+showPage("home");
 }
+function showTeacher(){isTeacher=true;showPage("teacherSetup");}
+function showStudent(){isTeacher=false;showPage("studentSetup");}
+function toggleSettings(){$("settingsPanel").classList.toggle("hidden");}
 
-function showTeacher(){
-  isTeacher=true;
-  showPage("teacherSetup");
-}
-
-function showStudent(){
-  isTeacher=false;
-  showPage("studentSetup");
-}
-
-function toggleSettings(){
-  $("settingsPanel").classList.toggle("hidden");
-}
-
-
-// ==========================================
 // TIMER SETTINGS
-// ==========================================
-
 function getDuration(){
-  let m=Math.max(0,Math.min(99,parseInt($("durationMinutes").value)||0));
-  let s=Math.max(0,Math.min(59,parseInt($("durationSeconds").value)||0));
-
-  $("durationMinutes").value=m;
-  $("durationSeconds").value=s;
-
-  return m*60+s;
+let m=Math.max(0,Math.min(99,parseInt($("durationMinutes").value)||0));
+let s=Math.max(0,Math.min(59,parseInt($("durationSeconds").value)||0));
+$("durationMinutes").value=m;
+$("durationSeconds").value=s;
+return m*60+s;
 }
-
 function fmt(t){
-  t=Math.max(0,Math.floor(t));
-
-  return String(Math.floor(t/60)).padStart(2,"0")+":"+
-         String(t%60).padStart(2,"0");
+t=Math.max(0,Math.floor(t));
+return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
 }
 
-
-// ==========================================
 // FIREBASE INITIALIZATION
-// Uses the same connection method as Seasons.
-// ==========================================
-
-function setFirebaseStatus(message){
-  $("firebaseStatus").textContent=message;
-  $("studentFirebaseStatus").textContent=message;
-}
-
 function initFirebase(){
-  try{
-    if(typeof firebase==="undefined"){
-      throw Error("Firebase SDK failed to load");
-    }
-
-    if(!firebase.apps.length){
-      firebase.initializeApp(firebaseConfig);
-    }
-
-    db=firebase.database();
-
-    setFirebaseStatus("Connecting to Firebase...");
-
-    db.ref(".info/serverTimeOffset").on("value",s=>{
-      serverTimeOffset=Number(s.val())||0;
-
-      if(!serverTimeReady){
-        serverTimeReady=true;
-
-        if(resolveServerTimeReady){
-          resolveServerTimeReady();
-          resolveServerTimeReady=null;
-        }
-      }
-    });
-
-    db.ref(".info/connected").on("value",s=>{
-      if(s.val()===true){
-        setFirebaseStatus("🟢 Connected to Firebase");
-      }else{
-        setFirebaseStatus("🟠 Connecting to Firebase...");
-      }
-    });
-
-  }catch(e){
-    db=null;
-    setFirebaseStatus("🔴 Firebase error: "+e.message);
-    console.error(e);
-  }
+try{
+if(typeof firebase==="undefined")throw Error("Firebase SDK failed to load");
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+db=firebase.database();
+$("firebaseStatus").textContent="Connecting...";
+db.ref(".info/serverTimeOffset").on("value",s=>{
+serverTimeOffset=Number(s.val())||0;
+if(!serverTimeReady){
+serverTimeReady=true;
+if(resolveServerTimeReady){resolveServerTimeReady();resolveServerTimeReady=null;}
 }
-
-function genCode(){
-  return Math.random().toString(36).slice(2,8).toUpperCase();
+});
+db.ref(".info/connected").on("value",s=>{
+$("firebaseStatus").textContent=s.val()?"🟢 Connected to Firebase":"🟠 Connecting...";
+});
+}catch(e){
+db=null;
+$("firebaseStatus").textContent="🔴 Firebase error: "+e.message;
+console.error(e);
 }
+}
+function genCode(){return Math.random().toString(36).slice(2,8).toUpperCase();}
 
-
-// ==========================================
 // CREATE ROOM
-// ==========================================
-
 async function createRoom(){
-  if(!db){
-    alert("Firebase isn't connected yet. Please wait.");
-    return;
-  }
-
-  $("createBtn").disabled=true;
-
-  try{
-    room=genCode();
-
-    await db.ref(`rooms/${room}`).set({
-      createdAt:firebase.database.ServerValue.TIMESTAMP,
-      status:"waiting",
-      revealed:false,
-      roundActive:false,
-      drawings:{},
-      students:{},
-      prompt:"Draw what you saw!",
-      duration:60,
-      endsAt:0,
-      roundId:0,
-      roundIndex:-1,
-      clueIndex:-1
-    });
-
-    $("roomCode").textContent=room;
-
-    currentDuration=60;
-    roundIndex=-1;
-    clueIndex=-1;
-    roundId=0;
-    roundEndsAt=0;
-    roundActive=false;
-    endingRound=false;
-    revealed=false;
-
-    $("teacherTimer").textContent="01:00";
-    $("teacherPrompt").textContent="Press NEXT VIDEO CLUE to begin!";
-    $("teacherRound").textContent="Ready to begin";
-    $("roundNumber").textContent="0 / 9";
-
-    $("nextClueBtn").disabled=false;
-    $("startDrawingBtn").disabled=true;
-    $("stopBtn").disabled=true;
-
-    $("advanceBtn")?.remove();
-
-    showPage("teacherRoom");
-    listenTeacherRoom();
-
-  }catch(e){
-    alert("Room creation failed: "+e.message);
-  }
-
-  $("createBtn").disabled=false;
+if(!db){alert("Firebase isn't connected yet.");return;}
+$("createBtn").disabled=true;
+try{
+room=genCode();
+await db.ref(`rooms/${room}`).set({
+createdAt:firebase.database.ServerValue.TIMESTAMP,
+status:"waiting",
+revealed:false,
+roundActive:false,
+drawings:{},
+students:{},
+prompt:"Ready for Seasons!",
+duration:60,
+endsAt:0,
+roundId:0,
+roundIndex:-1
+});
+$("roomCode").textContent=room;
+currentDuration=60;
+roundIndex=-1;
+roundId=0;
+roundEndsAt=0;
+roundActive=false;
+endingRound=false;
+$("teacherTimer").textContent="01:00";
+$("teacherPrompt").textContent="Press START SEASONS GAME";
+$("teacherSeason").textContent="Ready to begin";
+$("roundNumber").textContent="0 / 5";
+$("advanceBtn").textContent="▶ START SEASONS GAME";
+$("stopBtn").disabled=true;
+showPage("teacherRoom");
+listenTeacherRoom();
+}catch(e){alert("Room creation failed: "+e.message);}
+$("createBtn").disabled=false;
 }
 
-
-// ==========================================
 // TEACHER ROOM LISTENERS
-// ==========================================
-
 function listenTeacherRoom(){
-
-  db.ref(`rooms/${room}/students`).on("value",s=>{
-    $("studentCount").textContent=s.numChildren();
-  });
-
-  db.ref(`rooms/${room}/drawings`).on("value",s=>{
-    $("drawingCount").textContent=s.numChildren();
-    renderGallery(s.val()||{});
-  });
-
-  db.ref(`rooms/${room}/status`).on("value",s=>{
-    $("teacherStatus").textContent="Room status: "+(s.val()||"waiting");
-  });
-
-  db.ref(`rooms/${room}/duration`).on("value",s=>{
-    currentDuration=Number(s.val())||60;
-    $("durationMinutes").value=Math.floor(currentDuration/60);
-    $("durationSeconds").value=currentDuration%60;
-  });
-
-  db.ref(`rooms/${room}/endsAt`).on("value",s=>{
-    roundEndsAt=Number(s.val())||0;
-    updateTimer();
-  });
-
-  db.ref(`rooms/${room}/roundActive`).on("value",s=>{
-    roundActive=!!s.val();
-    $("stopBtn").disabled=!roundActive;
-    $("startDrawingBtn").disabled=roundActive||clueIndex<0;
-    $("nextClueBtn").disabled=roundActive;
-    updateTimer();
-  });
-
-  db.ref(`rooms/${room}/revealed`).on("value",s=>{
-    revealed=!!s.val();
-
-    db.ref(`rooms/${room}/drawings`).once("value").then(d=>{
-      renderGallery(d.val()||{});
-    });
-  });
-
-  db.ref(`rooms/${room}/roundIndex`).on("value",s=>{
-    let i=Number(s.val());
-
-    if(i>=0&&i<videoClues.length){
-      roundIndex=i;
-      updateTeacherRound();
-    }
-  });
-
-  db.ref(`rooms/${room}/clueIndex`).on("value",s=>{
-    let i=Number(s.val());
-
-    if(i>=0&&i<videoClues.length){
-      clueIndex=i;
-      updateClueDisplay();
-    }
-  });
+db.ref(`rooms/${room}/students`).on("value",s=>{$("studentCount").textContent=s.numChildren();});
+db.ref(`rooms/${room}/drawings`).on("value",s=>{
+$("drawingCount").textContent=s.numChildren();
+renderGallery(s.val()||{});
+});
+db.ref(`rooms/${room}/status`).on("value",s=>{$("teacherStatus").textContent="Room status: "+(s.val()||"waiting");});
+db.ref(`rooms/${room}/duration`).on("value",s=>{
+currentDuration=Number(s.val())||60;
+$("durationMinutes").value=Math.floor(currentDuration/60);
+$("durationSeconds").value=currentDuration%60;
+});
+db.ref(`rooms/${room}/endsAt`).on("value",s=>{roundEndsAt=Number(s.val())||0;updateTimer();});
+db.ref(`rooms/${room}/roundActive`).on("value",s=>{roundActive=!!s.val();$("stopBtn").disabled=!roundActive;updateTimer();});
+db.ref(`rooms/${room}/revealed`).on("value",s=>{
+revealed=!!s.val();
+db.ref(`rooms/${room}/drawings`).once("value").then(d=>{renderGallery(d.val()||{});});
+});
+db.ref(`rooms/${room}/roundIndex`).on("value",s=>{
+let i=Number(s.val());
+if(i>=0&&i<seasons.length){roundIndex=i;updateTeacherQuestion();}
+});
+}
+function updateTeacherQuestion(){
+let r=seasons[roundIndex];
+if(!r)return;
+$("teacherSeason").textContent=`ROUND ${roundIndex+1}: ${r.name} / ${r.chinese}`;
+$("teacherPrompt").innerHTML=`${r.prompt}<span class="chinese">${r.translation}</span>`;
+$("roundNumber").textContent=`${roundIndex+1} / 5`;
+$("advanceBtn").textContent=roundIndex===4?"↻ RESTART SEASONS GAME":"➡ NEXT QUESTION";
 }
 
-function updateTeacherRound(){
-  if(roundIndex<0)return;
-
-  $("teacherRound").textContent="ROUND "+(roundIndex+1);
-  $("roundNumber").textContent=(roundIndex+1)+" / "+videoClues.length;
-}
-
-function updateClueDisplay(){
-  if(clueIndex<0)return;
-
-  $("teacherRound").textContent="ROUND "+(clueIndex+1);
-  $("teacherPrompt").textContent="Video clue ready!";
-
-  $("startDrawingBtn").disabled=roundActive;
-}
-
-
-// ==========================================
-// NEXT VIDEO CLUE
-// ==========================================
-
-async function nextClue(){
-  if(!db||!room)return;
-
-  if(roundActive){
-    alert("Please stop the current round before moving to the next clue.");
-    return;
-  }
-
-  let next=clueIndex+1;
-
-  if(next>=videoClues.length){
-    next=0;
-  }
-
-  try{
-    await db.ref(`rooms/${room}`).update({
-      clueIndex:next,
-      status:"watch the clue",
-      revealed:false
-    });
-
-    clueIndex=next;
-    $("roundNumber").textContent=(next+1)+" / "+videoClues.length;
-    $("teacherRound").textContent="ROUND "+(next+1);
-    $("teacherPrompt").textContent="Video clue ready!";
-    $("startDrawingBtn").disabled=false;
-
-    openVideo(next);
-
-  }catch(e){
-    alert("Could not load the next clue: "+e.message);
-  }
-}
-
-
-// ==========================================
-// VIDEO SCREEN
-// ==========================================
-
-function openVideo(index){
-  if(index<0||index>=videoClues.length)return;
-
-  const video=$("clueVideo");
-
-  video.pause();
-  video.src=videoClues[index];
-  video.load();
-
-  $("videoScreen").classList.remove("hidden");
-
-  const tryPlay=video.play();
-
-  if(tryPlay&&typeof tryPlay.catch==="function"){
-    tryPlay.catch(()=>{
-      // Some iPads require another tap before video playback.
-    });
-  }
-
-  if($("videoScreen").requestFullscreen){
-    $("videoScreen").requestFullscreen().catch(()=>{});
-  }
-}
-
-function replayVideo(){
-  const video=$("clueVideo");
-
-  video.currentTime=0;
-
-  const p=video.play();
-
-  if(p&&typeof p.catch==="function"){
-    p.catch(()=>{});
-  }
-}
-
-function backToDrawing(){
-  $("clueVideo").pause();
-  $("videoScreen").classList.add("hidden");
-
-  if(document.fullscreenElement&&document.exitFullscreen){
-    document.exitFullscreen().catch(()=>{});
-  }
-}
-
-
-// ==========================================
 // SAVE TIMER SETTINGS
-// ==========================================
-
 function saveSettings(){
-  let dur=getDuration();
-
-  if(dur<1){
-    alert("Timer must be at least 1 second.");
-    return;
-  }
-
-  currentDuration=dur;
-
-  if(db&&room){
-    db.ref(`rooms/${room}`).update({duration:dur});
-  }
-
-  $("teacherTimer").textContent=fmt(dur);
-  $("settingsPanel").classList.add("hidden");
+let dur=getDuration();
+if(dur<1){alert("Timer must be at least 1 second.");return;}
+currentDuration=dur;
+if(db&&room)db.ref(`rooms/${room}`).update({duration:dur});
+$("teacherTimer").textContent=fmt(dur);
+$("settingsPanel").classList.add("hidden");
 }
 
-
-// ==========================================
 // COPY ROOM CODE
-// ==========================================
-
 function copyRoomCode(){
-  if(navigator.clipboard?.writeText){
-    navigator.clipboard.writeText(room)
-      .then(()=>alert("Room code copied!"))
-      .catch(()=>alert("Room code: "+room));
-  }else{
-    alert("Room code: "+room);
-  }
+if(navigator.clipboard?.writeText){
+navigator.clipboard.writeText(room).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+room));
+}else alert("Room code: "+room);
 }
 
-
-// ==========================================
-// START DRAWING ROUND
-// Timer starts ONLY when teacher presses this.
-// ==========================================
-
-async function startDrawing(){
-  if(!db||!room)return;
-
-  if(clueIndex<0){
-    alert("Please select a video clue first.");
-    return;
-  }
-
-  if(roundActive){
-    alert("A drawing round is already active.");
-    return;
-  }
-
-  let duration=getDuration();
-
-  if(duration<1){
-    alert("Set the timer to at least 1 second.");
-    $("settingsPanel").classList.remove("hidden");
-    return;
-  }
-
-  $("startDrawingBtn").disabled=true;
-
-  try{
-    await serverTimeReadyPromise;
-
-    const newId=Date.now();
-    const sharedEnd=serverNow()+duration*1000;
-
-    endingRound=false;
-
-    await db.ref(`rooms/${room}`).update({
-      roundIndex:clueIndex,
-      roundId:newId,
-      prompt:"Draw what you saw!",
-      duration:duration,
-      roundActive:true,
-      status:"drawing",
-      revealed:false,
-      endsAt:sharedEnd,
-      drawings:{}
-    });
-
-    roundIndex=clueIndex;
-    roundId=newId;
-    roundActive=true;
-    roundEndsAt=sharedEnd;
-    currentDuration=duration;
-    revealed=false;
-
-    $("teacherRound").textContent="ROUND "+(roundIndex+1);
-    $("roundNumber").textContent=(roundIndex+1)+" / "+videoClues.length;
-    $("teacherPrompt").textContent="Draw what you saw!";
-    $("teacherTimer").textContent=fmt(duration);
-
-    $("stopBtn").disabled=false;
-    $("nextClueBtn").disabled=true;
-
-    closeReveal();
-
-    updateTimer();
-
-  }catch(e){
-    alert("Could not start drawing: "+e.message);
-    $("startDrawingBtn").disabled=false;
-  }
+// START NEXT QUESTION
+async function advanceQuestion(){
+if(!db||!room)return;
+let next=roundIndex+1;
+if(next>=seasons.length)next=0;
+let duration=getDuration();
+if(duration<1){
+alert("Set the timer to at least 1 second.");
+$("settingsPanel").classList.remove("hidden");
+return;
+}
+let r=seasons[next];
+let newId=Date.now();
+try{
+await serverTimeReadyPromise;
+const sharedEnd=serverNow()+duration*1000;
+endingRound=false;
+await db.ref(`rooms/${room}`).update({
+roundIndex:next,
+roundId:newId,
+prompt:r.prompt,
+duration:duration,
+roundActive:true,
+status:"drawing",
+revealed:false,
+endsAt:sharedEnd,
+drawings:{}
+});
+roundIndex=next;
+roundId=newId;
+roundActive=true;
+roundEndsAt=sharedEnd;
+updateTeacherQuestion();
+closeReveal();
+$("stopBtn").disabled=false;
+}catch(e){alert("Could not start next question: "+e.message);}
 }
 
-
-// ==========================================
 // STOP TIMER
-// ==========================================
-
 async function stopRound(){
-  if(!db||!room||!roundId||endingRound||!roundActive)return;
-
-  endingRound=true;
-  $("stopBtn").disabled=true;
-
-  try{
-    const endedAt=serverNow();
-
-    await db.ref(`rooms/${room}`).update({
-      roundActive:false,
-      status:"time up",
-      endsAt:endedAt
-    });
-
-    roundActive=false;
-    roundEndsAt=endedAt;
-
-    $("teacherTimer").textContent="00:00";
-    $("teacherStatus").textContent="Round ended. Collecting drawings...";
-    $("startDrawingBtn").disabled=true;
-    $("nextClueBtn").disabled=false;
-
-  }catch(e){
-    endingRound=false;
-    alert("Could not stop timer: "+e.message);
-    $("stopBtn").disabled=false;
-  }
+if(!db||!room||!roundId||endingRound||!roundActive)return;
+endingRound=true;
+$("stopBtn").disabled=true;
+try{
+const endedAt=serverNow();
+await db.ref(`rooms/${room}`).update({roundActive:false,status:"time up",endsAt:endedAt});
+roundActive=false;
+roundEndsAt=endedAt;
+$("teacherTimer").textContent="00:00";
+$("teacherStatus").textContent="Round ended. Collecting drawings...";
+}catch(e){
+endingRound=false;
+alert("Could not stop timer: "+e.message);
+$("stopBtn").disabled=false;
+}
 }
 
-
-// ==========================================
 // SHARED TIMER
-// Uses Firebase server time to synchronize iPads.
-// ==========================================
-
 function updateTimer(){
-
-  function tick(){
-    const now=serverNow();
-
-    let left=roundEndsAt
-      ?Math.max(0,Math.ceil((roundEndsAt-now)/1000))
-      :currentDuration;
-
-    if(!roundActive&&roundEndsAt&&now>=roundEndsAt){
-      left=0;
-    }
-
-    $("teacherTimer").textContent=fmt(left);
-    $("studentTimer").textContent=fmt(left);
-
-    if(roundActive&&roundEndsAt&&now>=roundEndsAt){
-      if(isTeacher){
-        stopRound();
-      }else{
-        autoSubmitDrawing();
-      }
-    }
-  }
-
-  tick();
-
-  if(timerInterval)clearInterval(timerInterval);
-
-  timerInterval=setInterval(tick,200);
+function tick(){
+const now=serverNow();
+let left=roundEndsAt?Math.max(0,Math.ceil((roundEndsAt-now)/1000)):currentDuration;
+if(!roundActive&&roundEndsAt&&now>=roundEndsAt)left=0;
+$("teacherTimer").textContent=fmt(left);
+$("studentTimer").textContent=fmt(left);
+if(roundActive&&roundEndsAt&&now>=roundEndsAt){
+if(isTeacher)stopRound();
+else autoSubmitDrawing();
+}
+}
+tick();
+if(timerInterval)clearInterval(timerInterval);
+timerInterval=setInterval(tick,200);
 }
 
-
-// ==========================================
 // STUDENT JOIN ROOM
-// Same room structure as Seasons.
-// ==========================================
-
 async function joinRoom(){
-  if(!db){
-    alert("Firebase is not connected. Please wait for the connection message.");
-    return;
-  }
-
-  studentName=$("studentName").value.trim();
-  room=$("joinCode").value.trim().toUpperCase();
-
-  if(!studentName||!room){
-    alert("Enter your name and room code.");
-    return;
-  }
-
-  $("joinBtn").disabled=true;
-
-  try{
-    let ref=db.ref(`rooms/${room}`);
-    let s=await ref.once("value");
-
-    if(!s.exists()){
-      alert("Room not found. Check the room code.");
-      $("joinBtn").disabled=false;
-      return;
-    }
-
-    studentId=db.ref(`rooms/${room}/students`).push().key;
-
-    await db.ref(`rooms/${room}/students/${studentId}`).set({
-      name:studentName,
-      joinedAt:firebase.database.ServerValue.TIMESTAMP
-    });
-
-    db.ref(`rooms/${room}/students/${studentId}`).onDisconnect().remove();
-
-    showPage("studentDrawing");
-
-    submitted=false;
-    autoSubmitted=false;
-    studentReady=false;
-    lastRoundActive=false;
-    roundId=0;
-
-    $("readyOverlay").classList.remove("hidden");
-    $("handsOverlay").classList.add("hidden");
-    $("submitBtn").disabled=true;
-    $("studentStatus").textContent="Connected! Waiting for the teacher.";
-
-    setTimeout(()=>setupCanvas(false),180);
-
-    listenStudentRoom();
-    listenReveal();
-
-  }catch(e){
-    alert("Join failed: "+e.message);
-    console.error(e);
-  }
-
-  $("joinBtn").disabled=false;
+if(!db){alert("Firebase is not connected.");return;}
+studentName=$("studentName").value.trim();
+room=$("joinCode").value.trim().toUpperCase();
+if(!studentName||!room){alert("Enter your name and room code.");return;}
+try{
+let ref=db.ref(`rooms/${room}`);
+let s=await ref.once("value");
+if(!s.exists()){alert("Room not found. Check the room code.");return;}
+studentId=db.ref(`rooms/${room}/students`).push().key;
+await db.ref(`rooms/${room}/students/${studentId}`).set({
+name:studentName,
+joinedAt:firebase.database.ServerValue.TIMESTAMP
+});
+db.ref(`rooms/${room}/students/${studentId}`).onDisconnect().remove();
+showPage("studentDrawing");
+submitted=false;
+autoSubmitted=false;
+studentReady=false;
+lastRoundActive=false;
+$("readyOverlay").classList.remove("hidden");
+$("handsOverlay").classList.add("hidden");
+$("submitBtn").disabled=true;
+setTimeout(()=>setupCanvas(false),180);
+listenStudentRoom();
+listenReveal();
+}catch(e){alert("Join failed: "+e.message);}
 }
 
-
-// ==========================================
 // STUDENT ROOM LISTENER
-// ==========================================
-
 function listenStudentRoom(){
-
-  db.ref(`rooms/${room}`).on("value",s=>{
-    let v=s.val();
-
-    if(!v)return;
-
-    let incoming=Number(v.roundId)||0;
-    let newRound=incoming!==roundId&&incoming!==0;
-
-    const wasActive=roundActive;
-
-    roundEndsAt=Number(v.endsAt)||0;
-    roundActive=!!v.roundActive;
-    currentDuration=Number(v.duration)||60;
-
-    roundIndex=Number(v.roundIndex);
-
-    if(roundIndex>=0&&roundIndex<videoClues.length){
-      $("studentRound").textContent="ROUND "+(roundIndex+1);
-    }
-
-    // Do not show video clues or food names to students.
-    $("studentPrompt").textContent="Draw what you saw!";
-
-    if(newRound){
-      roundId=incoming;
-
-      submitted=false;
-      autoSubmitted=false;
-      studentReady=true;
-
-      $("readyOverlay").classList.add("hidden");
-      $("handsOverlay").classList.add("hidden");
-      $("message").textContent="";
-
-      clearCanvas();
-      setTool("pencil");
-
-      $("submitBtn").disabled=false;
-      $("studentStatus").textContent="Your turn! Start drawing.";
-    }
-
-    if(wasActive&&!roundActive&&roundId!==0){
-      autoSubmitDrawing();
-    }
-
-    if(submitted){
-      $("handsOverlay").classList.remove("hidden");
-      $("submitBtn").disabled=true;
-    }
-
-    if(roundActive){
-      $("readyOverlay").classList.add("hidden");
-    }
-
-    if(!roundActive){
-      $("submitBtn").disabled=true;
-    }else if(studentReady&&!submitted){
-      $("submitBtn").disabled=false;
-    }
-
-    updateTimer();
-
-    lastRoundActive=roundActive;
-  });
+db.ref(`rooms/${room}`).on("value",s=>{
+let v=s.val();
+if(!v)return;
+let incoming=Number(v.roundId)||0;
+let newRound=incoming!==roundId&&incoming!==0;
+const wasActive=roundActive;
+roundEndsAt=Number(v.endsAt)||0;
+roundActive=!!v.roundActive;
+currentDuration=Number(v.duration)||60;
+$("studentPrompt").innerHTML=v.prompt||"Draw something!";
+roundIndex=Number(v.roundIndex);
+if(roundIndex>=0&&roundIndex<seasons.length){
+let r=seasons[roundIndex];
+$("studentSeason").textContent=`ROUND ${roundIndex+1}: ${r.name} / ${r.chinese}`;
+$("studentPrompt").innerHTML=`${r.prompt}<span class="chinese">${r.translation}</span>`;
+}
+if(newRound){
+roundId=incoming;
+submitted=false;
+autoSubmitted=false;
+studentReady=true;
+$("readyOverlay").classList.add("hidden");
+$("handsOverlay").classList.add("hidden");
+$("message").textContent="";
+clearCanvas();
+setTool("pencil");
+$("submitBtn").disabled=false;
+$("studentStatus").textContent="Your turn! Start drawing.";
+}
+if(wasActive&&!roundActive&&roundId!==0)autoSubmitDrawing();
+if(submitted){
+$("handsOverlay").classList.remove("hidden");
+$("submitBtn").disabled=true;
+}
+if(roundActive)$("readyOverlay").classList.add("hidden");
+if(!roundActive)$("submitBtn").disabled=true;
+else if(studentReady&&!submitted)$("submitBtn").disabled=false;
+updateTimer();
+lastRoundActive=roundActive;
+});
 }
 
-
-// ==========================================
 // STUDENT DRAWING CANVAS
-// ==========================================
-
 const canvas=$("canvas");
 const ctx=canvas.getContext("2d");
-
 function setupCanvas(preserve=true){
-  let saved=preserve&&canvas.width&&canvas.height
-    ?canvas.toDataURL()
-    :null;
-
-  let r=canvas.getBoundingClientRect();
-
-  if(!r.width||!r.height)return;
-
-  let dpr=window.devicePixelRatio||1;
-
-  canvas.width=Math.round(r.width*dpr);
-  canvas.height=Math.round(r.height*dpr);
-
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,r.width,r.height);
-
-  if(saved){
-    let im=new Image();
-
-    im.onload=()=>{
-      ctx.drawImage(im,0,0,r.width,r.height);
-    };
-
-    im.src=saved;
-  }else{
-    history=[];
-  }
+let saved=preserve&&canvas.width&&canvas.height?canvas.toDataURL():null;
+let r=canvas.getBoundingClientRect();
+if(!r.width||!r.height)return;
+let dpr=window.devicePixelRatio||1;
+canvas.width=Math.round(r.width*dpr);
+canvas.height=Math.round(r.height*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,r.width,r.height);
+if(saved){
+let im=new Image();
+im.onload=()=>{ctx.drawImage(im,0,0,r.width,r.height);};
+im.src=saved;
+}else history=[];
 }
 
-
-// ==========================================
 // DRAWING POINTER
-// ==========================================
-
 function pnt(e){
-  let r=canvas.getBoundingClientRect();
-
-  return{
-    x:e.clientX-r.left,
-    y:e.clientY-r.top
-  };
+let r=canvas.getBoundingClientRect();
+return{x:e.clientX-r.left,y:e.clientY-r.top};
 }
 
-
-// ==========================================
 // PENCIL / ERASER
-// ==========================================
-
 function setTool(t){
-  tool=t;
-
-  $("pencilBtn").classList.toggle("tool-active",t==="pencil");
-  $("eraserBtn").classList.toggle("tool-active",t==="eraser");
-
-  canvas.style.cursor=t==="eraser"?"cell":"crosshair";
+tool=t;
+$("pencilBtn").classList.toggle("tool-active",t==="pencil");
+$("eraserBtn").classList.toggle("tool-active",t==="eraser");
+canvas.style.cursor=t==="eraser"?"cell":"crosshair";
 }
-
 canvas.addEventListener("pointerdown",e=>{
-  if(!roundActive||submitted||!studentReady)return;
-
-  e.preventDefault();
-
-  drawing=true;
-
-  try{
-    canvas.setPointerCapture(e.pointerId);
-  }catch(_){}
-
-  history.push(canvas.toDataURL());
-
-  let p=pnt(e);
-
-  ctx.beginPath();
-  ctx.moveTo(p.x,p.y);
-  ctx.lineTo(p.x+.01,p.y+.01);
-
-  ctx.lineWidth=tool==="eraser"
-    ?Math.max(20,Number($("brush").value)*2)
-    :Number($("brush").value);
-
-  ctx.lineCap="round";
-  ctx.lineJoin="round";
-
-  ctx.strokeStyle=tool==="eraser"?"#fff":$("color").value;
-
-  ctx.stroke();
+if(!roundActive||submitted||!studentReady)return;
+e.preventDefault();
+drawing=true;
+try{canvas.setPointerCapture(e.pointerId);}catch(_){}
+history.push(canvas.toDataURL());
+let p=pnt(e);
+ctx.beginPath();
+ctx.moveTo(p.x,p.y);
+ctx.lineTo(p.x+.01,p.y+.01);
+ctx.lineWidth=tool==="eraser"?Math.max(20,Number($("brush").value)*2):Number($("brush").value);
+ctx.lineCap="round";
+ctx.lineJoin="round";
+ctx.strokeStyle=tool==="eraser"?"#fff":$("color").value;
+ctx.stroke();
 });
-
 canvas.addEventListener("pointermove",e=>{
-  if(!drawing||submitted)return;
-
-  e.preventDefault();
-
-  let p=pnt(e);
-
-  ctx.lineWidth=tool==="eraser"
-    ?Math.max(20,Number($("brush").value)*2)
-    :Number($("brush").value);
-
-  ctx.lineCap="round";
-  ctx.lineJoin="round";
-
-  ctx.strokeStyle=tool==="eraser"?"#fff":$("color").value;
-
-  ctx.lineTo(p.x,p.y);
-  ctx.stroke();
+if(!drawing||submitted)return;
+e.preventDefault();
+let p=pnt(e);
+ctx.lineWidth=tool==="eraser"?Math.max(20,Number($("brush").value)*2):Number($("brush").value);
+ctx.lineCap="round";
+ctx.lineJoin="round";
+ctx.strokeStyle=tool==="eraser"?"#fff":$("color").value;
+ctx.lineTo(p.x,p.y);
+ctx.stroke();
 });
-
 ["pointerup","pointercancel","pointerleave"].forEach(n=>{
-  canvas.addEventListener(n,()=>{
-    drawing=false;
-    ctx.beginPath();
-  });
+canvas.addEventListener(n,()=>{
+drawing=false;
+ctx.beginPath();
+});
 });
 
-
-// ==========================================
 // CLEAR CANVAS
-// ==========================================
-
 function clearCanvas(){
-  ctx.save();
-
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.restore();
-
-  history=[];
+ctx.save();
+ctx.setTransform(1,0,0,1,0,0);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.restore();
+history=[];
 }
 
-
-// ==========================================
 // UNDO
-// ==========================================
-
 function undoDrawing(){
-  if(!history.length)return;
-
-  let src=history.pop();
-  let im=new Image();
-
-  im.onload=()=>{
-    ctx.save();
-
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(im,0,0,canvas.width,canvas.height);
-
-    ctx.restore();
-  };
-
-  im.src=src;
+if(!history.length)return;
+let src=history.pop();
+let im=new Image();
+im.onload=()=>{
+ctx.save();
+ctx.setTransform(1,0,0,1,0,0);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(im,0,0,canvas.width,canvas.height);
+ctx.restore();
+};
+im.src=src;
 }
 
-
-// ==========================================
 // SAVE DRAWING
-// ==========================================
-
 async function saveCurrentDrawing(automatic=false){
-  if(!studentId||!room||!roundId)return;
-  if(submitted||autoSubmitted)return;
-
-  submitted=true;
-  autoSubmitted=true;
-  studentReady=false;
-  drawing=false;
-
-  const imageData=canvas.toDataURL("image/jpeg",0.75);
-  const savedRound=roundId;
-
-  $("submitBtn").disabled=true;
-  $("handsOverlay").classList.remove("hidden");
-  $("readyOverlay").classList.add("hidden");
-
-  try{
-    await db.ref(`rooms/${room}/drawings/${studentId}`).set({
-      name:studentName,
-      image:imageData,
-      submittedAt:firebase.database.ServerValue.TIMESTAMP,
-      roundId:savedRound,
-      automatic:automatic
-    });
-
-    $("message").textContent="Drawing submitted.";
-
-    $("studentStatus").textContent=automatic
-      ?"Time is up. Your drawing has been submitted."
-      :"Your drawing has been submitted.";
-
-  }catch(e){
-    submitted=false;
-    autoSubmitted=false;
-    studentReady=roundActive;
-
-    $("handsOverlay").classList.add("hidden");
-    $("submitBtn").disabled=!roundActive;
-
-    alert("Could not submit drawing: "+e.message);
-  }
+if(!studentId||!room||!roundId)return;
+if(submitted||autoSubmitted)return;
+submitted=true;
+autoSubmitted=true;
+studentReady=false;
+drawing=false;
+const imageData=canvas.toDataURL("image/jpeg",0.75);
+const savedRound=roundId;
+$("submitBtn").disabled=true;
+$("handsOverlay").classList.remove("hidden");
+$("readyOverlay").classList.add("hidden");
+try{
+await db.ref(`rooms/${room}/drawings/${studentId}`).set({
+name:studentName,
+image:imageData,
+submittedAt:firebase.database.ServerValue.TIMESTAMP,
+roundId:savedRound,
+automatic:automatic
+});
+$("message").textContent="Drawing submitted.";
+$("studentStatus").textContent=automatic?"Time is up. Your drawing has been submitted.":"Your drawing has been submitted.";
+}catch(e){
+submitted=false;
+autoSubmitted=false;
+studentReady=roundActive;
+$("handsOverlay").classList.add("hidden");
+$("submitBtn").disabled=!roundActive;
+alert("Could not submit drawing: "+e.message);
+}
 }
 
-
-// ==========================================
 // MANUAL SUBMIT
-// ==========================================
-
 function submitDrawing(){
-  if(!roundActive||!studentReady||submitted)return;
-
-  saveCurrentDrawing(false);
+if(!roundActive||!studentReady||submitted)return;
+saveCurrentDrawing(false);
 }
 
-
-// ==========================================
 // AUTOMATIC SUBMIT WHEN TIMER ENDS
-// ==========================================
-
 function autoSubmitDrawing(){
-  if(!studentId||!room||!roundId)return;
-  if(submitted||autoSubmitted)return;
-
-  if(roundActive&&roundEndsAt>serverNow())return;
-
-  saveCurrentDrawing(true);
+if(!studentId||!room||!roundId)return;
+if(submitted||autoSubmitted)return;
+if(roundActive&&roundEndsAt>serverNow())return;
+saveCurrentDrawing(true);
 }
 
-
-// ==========================================
 // GALLERY
-// ==========================================
-
 function drawingCard(d){
-  let el=document.createElement("div");
-  el.className="drawing-card";
-
-  let im=document.createElement("img");
-  im.src=d.image||"";
-  im.alt="Student drawing";
-
-  let name=document.createElement("p");
-  name.textContent=d.name||"Student";
-
-  if(d.automatic){
-    name.textContent+=" · Time ended";
-  }
-
-  el.append(im,name);
-
-  return el;
+let el=document.createElement("div");
+el.className="drawing-card";
+let im=document.createElement("img");
+im.src=d.image||"";
+im.alt="Student drawing";
+let name=document.createElement("p");
+name.textContent=d.name||"Student";
+if(d.automatic)name.textContent+=" · Time ended";
+el.append(im,name);
+return el;
 }
-
 function renderGallery(drawings){
-  let g=$("gallery");
-  let fg=$("fullscreenGallery");
-
-  g.innerHTML="";
-  fg.innerHTML="";
-
-  let list=Object.values(drawings||{});
-
-  list=list.filter(d=>
-    !roundId||Number(d.roundId)===Number(roundId)
-  );
-
-  if(!list.length){
-    g.innerHTML='<p class="small">No drawings submitted yet.</p>';
-    fg.innerHTML='<div class="reveal-empty">No drawings submitted yet.</div>';
-    return;
-  }
-
-  list.forEach(d=>{
-    if(revealed){
-      g.append(drawingCard(d));
-      fg.append(drawingCard(d));
-    }else{
-      let c=document.createElement("div");
-      c.className="drawing-card";
-
-      let ph=document.createElement("div");
-
-      ph.style.cssText=
-        "height:150px;background:#e9edfa;display:grid;place-items:center;font-size:36px";
-
-      ph.textContent="🔒";
-
-      let p=document.createElement("p");
-      p.textContent="Hidden drawing";
-
-      c.append(ph,p);
-      g.append(c);
-    }
-  });
+let g=$("gallery");
+let fg=$("fullscreenGallery");
+g.innerHTML="";
+fg.innerHTML="";
+let list=Object.values(drawings||{});
+list=list.filter(d=>!roundId||Number(d.roundId)===Number(roundId));
+if(!list.length){
+g.innerHTML='<p class="small">No drawings submitted yet.</p>';
+fg.innerHTML='<div class="reveal-empty">No drawings submitted yet.</div>';
+return;
+}
+list.forEach(d=>{
+if(revealed){
+g.append(drawingCard(d));
+fg.append(drawingCard(d));
+}else{
+let c=document.createElement("div");
+c.className="drawing-card";
+let ph=document.createElement("div");
+ph.style.cssText="height:150px;background:#e9edfa;display:grid;place-items:center;font-size:36px";
+ph.textContent="🔒";
+let p=document.createElement("p");
+p.textContent="Hidden drawing";
+c.append(ph,p);
+g.append(c);
+}
+});
 }
 
-
-// ==========================================
 // REVEAL DRAWINGS
-// ==========================================
-
 async function revealDrawings(){
-  if(!db||!room)return;
-
-  revealed=true;
-
-  await db.ref(`rooms/${room}/revealed`).set(true);
-
-  let s=await db.ref(`rooms/${room}/drawings`).once("value");
-
-  renderGallery(s.val()||{});
-
-  openReveal();
+if(!db||!room)return;
+revealed=true;
+await db.ref(`rooms/${room}/revealed`).set(true);
+let s=await db.ref(`rooms/${room}/drawings`).once("value");
+renderGallery(s.val()||{});
+openReveal();
 }
-
 function hideDrawings(){
-  revealed=false;
-
-  if(!db||!room)return;
-
-  closeReveal();
-
-  db.ref(`rooms/${room}/revealed`).set(false);
-
-  db.ref(`rooms/${room}/drawings`).once("value").then(s=>{
-    renderGallery(s.val()||{});
-  });
+revealed=false;
+if(!db||!room)return;
+closeReveal();
+db.ref(`rooms/${room}/revealed`).set(false);
+db.ref(`rooms/${room}/drawings`).once("value").then(s=>{renderGallery(s.val()||{});});
 }
 
-
-// ==========================================
 // FULLSCREEN REVEAL
-// ==========================================
-
 function openReveal(){
-  $("revealScreen").classList.remove("hidden");
-
-  if(document.documentElement.requestFullscreen){
-    document.documentElement.requestFullscreen().catch(()=>{});
-  }
+$("revealScreen").classList.remove("hidden");
+if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
 }
-
 function closeReveal(){
-  $("revealScreen").classList.add("hidden");
-
-  if(document.fullscreenElement&&document.exitFullscreen){
-    document.exitFullscreen().catch(()=>{});
-  }
+$("revealScreen").classList.add("hidden");
+if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});
 }
 
-
-// ==========================================
 // STUDENT REVEAL STATUS
-// ==========================================
-
 function listenReveal(){
-  db.ref(`rooms/${room}/revealed`).on("value",s=>{
-    if(s.val()){
-      $("studentStatus").textContent="🎉 The teacher is revealing the drawings!";
-    }
-  });
+db.ref(`rooms/${room}/revealed`).on("value",s=>{
+if(s.val())$("studentStatus").textContent="🎉 The teacher is revealing the drawings!";
+});
 }
 
-
-// ==========================================
 // CLEAR DRAWINGS
-// ==========================================
-
 async function clearRoundDrawings(){
-  if(!confirm("Clear all drawings submitted for this round?"))return;
-
-  try{
-    await db.ref(`rooms/${room}/drawings`).remove();
-
-    revealed=false;
-
-    await db.ref(`rooms/${room}/revealed`).set(false);
-
-    closeReveal();
-
-  }catch(e){
-    alert("Could not clear drawings: "+e.message);
-  }
+if(!confirm("Clear all drawings submitted for this question?"))return;
+try{
+await db.ref(`rooms/${room}/drawings`).remove();
+revealed=false;
+await db.ref(`rooms/${room}/revealed`).set(false);
+closeReveal();
+}catch(e){alert("Could not clear drawings: "+e.message);}
 }
 
-
-// ==========================================
 // RESIZE CANVAS
-// ==========================================
-
 window.addEventListener("resize",()=>{
-  if(!$("studentDrawing").classList.contains("hidden")){
-    setupCanvas(true);
-  }
+if(!$("studentDrawing").classList.contains("hidden"))setupCanvas(true);
 });
-
 window.addEventListener("orientationchange",()=>{
-  setTimeout(()=>{
-    if(!$("studentDrawing").classList.contains("hidden")){
-      setupCanvas(true);
-    }
-  },250);
+setTimeout(()=>{
+if(!$("studentDrawing").classList.contains("hidden"))setupCanvas(true);
+},250);
 });
 
-
-// ==========================================
 // START FIREBASE
-// ==========================================
-
 initFirebase();
-
 </script>
 </body>
 </html>
