@@ -21,6 +21,7 @@ button.green{background:#159b67}
 button.gray{background:#607d8b}
 button.orange{background:#ed8b27}
 button.red{background:#dc4545}
+button.dark{background:#26334a}
 input,textarea,select{width:100%;padding:12px;border:2px solid #dce1ec;border-radius:9px;font-size:16px;margin:7px 0;color:#26334a}
 label{font-weight:bold;display:block;margin-top:10px}
 .hidden{display:none!important}
@@ -34,9 +35,9 @@ label{font-weight:bold;display:block;margin-top:10px}
 .stat{background:#eef1ff;padding:10px 14px;border-radius:10px}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:15px}
 .drawing-card{border:2px solid #e0e4ef;border-radius:12px;overflow:hidden;background:white;text-align:center;color:#26334a}
-.drawing-card img{width:100%;display:block;background:#fff}
+.drawing-card img{width:100%;display:block;background:#fff;object-fit:contain}
 .drawing-card p{font-weight:bold;padding:9px;margin:0}
-#canvas{width:100%;height:360px;border:3px solid #dce1ec;border-radius:12px;background:white;touch-action:none;display:block;cursor:crosshair}
+#canvas{width:100%;height:360px;border:3px solid #dce1ec;border-radius:12px;background:white;touch-action:none;display:block;cursor:crosshair;user-select:none;-webkit-user-select:none}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
 .toolbar input[type=color]{width:55px;height:43px;padding:2px}
 .toolbar input[type=range]{width:110px}
@@ -46,11 +47,51 @@ label{font-weight:bold;display:block;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1;min-width:130px}
 #message{text-align:center;font-weight:bold;padding:10px}
+.settings-box{background:#f0f4ff;padding:16px;border-radius:12px;margin-top:12px}
+.time-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.teacher-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.teacher-actions button{flex:1;min-width:145px}
+
+/* FULLSCREEN REVEAL */
+#revealScreen{
+ position:fixed;inset:0;z-index:9999;
+ background:#101827;color:white;
+ padding:15px;overflow-y:auto;
+ display:flex;flex-direction:column;
+}
+#revealScreen.hidden{display:none!important}
+.reveal-header{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:10px;flex-wrap:wrap;margin-bottom:12px;
+}
+.reveal-header h2{margin:0;font-size:clamp(22px,4vw,34px)}
+#fullscreenGallery{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));
+ gap:16px;align-items:start;
+}
+#fullscreenGallery .drawing-card{
+ background:white;border:3px solid white;
+}
+#fullscreenGallery .drawing-card img{
+ width:100%;height:auto;max-height:65vh;
+ object-fit:contain;background:white;
+}
+#fullscreenGallery .drawing-card p{
+ font-size:20px;padding:12px;
+}
+.reveal-empty{
+ text-align:center;font-size:22px;padding:40px 10px;
+ color:#dce8f8;
+}
 @media(max-width:600px){
-.role-grid{grid-template-columns:1fr}
-#canvas{height:330px}
-.container{padding:10px}
-.panel{padding:15px}
+ .role-grid{grid-template-columns:1fr}
+ #canvas{height:330px}
+ .container{padding:10px}
+ .panel{padding:15px}
+ .time-inputs{grid-template-columns:1fr 1fr}
+ #fullscreenGallery{grid-template-columns:1fr}
+ #fullscreenGallery .drawing-card img{max-height:55vh}
 }
 </style>
 </head>
@@ -111,6 +152,7 @@ CREATE NEW ROOM
 <div class="room-code" id="roomCode">------</div>
 
 <button class="gray" onclick="copyRoomCode()">COPY ROOM CODE</button>
+<button class="dark" onclick="toggleSettings()">⚙️ SETTINGS</button>
 
 <div id="teacherStatus" class="status">Room status: waiting</div>
 
@@ -120,32 +162,44 @@ CREATE NEW ROOM
 </div>
 </div>
 
-<div class="panel">
-<h2>🎤 Drawing Challenge</h2>
+<!-- SETTINGS PANEL -->
+<div id="settingsPanel" class="panel hidden">
+<h2>⚙️ Game Settings</h2>
 
 <label>What should students draw?</label>
 <input id="promptInput" value="Draw a picnic basket!">
 
-<div class="row">
+<label>Set the timer</label>
+<p class="small">Enter the number of minutes and seconds.</p>
+
+<div class="time-inputs">
 <div>
-<label>Time limit</label>
-<select id="duration">
-<option value="10">10 seconds</option>
-<option value="15">15 seconds</option>
-<option value="20" selected>20 seconds</option>
-<option value="30">30 seconds</option>
-<option value="45">45 seconds</option>
-</select>
+<label for="durationMinutes">Minutes</label>
+<input id="durationMinutes" type="number" min="0" max="99" value="0">
+</div>
+<div>
+<label for="durationSeconds">Seconds</label>
+<input id="durationSeconds" type="number" min="0" max="59" value="20">
+</div>
 </div>
 
-<div>
-<label>Round controls</label>
+<p class="small">Example: 2 minutes and 30 seconds.</p>
+
+<button class="green" onclick="saveSettings()">SAVE SETTINGS</button>
+<button class="gray" onclick="toggleSettings()">CLOSE SETTINGS</button>
+</div>
+
+<div class="panel">
+<h2>🎤 Drawing Challenge</h2>
+
+<div class="prompt" id="teacherPromptPreview">Draw a picnic basket!</div>
+
+<div class="timer" id="teacherTimer">00:20</div>
+
+<div class="teacher-actions">
 <button class="green" onclick="startRound()">START DRAWING ROUND</button>
 <button class="orange" onclick="stopRound()">STOP TIMER</button>
 </div>
-</div>
-
-<div class="timer" id="teacherTimer">20</div>
 </div>
 
 <div class="panel">
@@ -182,7 +236,7 @@ CREATE NEW ROOM
 
 <div class="prompt" id="studentPrompt">Get ready!</div>
 
-<div class="timer" id="studentTimer">20</div>
+<div class="timer" id="studentTimer">00:20</div>
 
 <canvas id="canvas"></canvas>
 
@@ -206,6 +260,15 @@ SUBMIT DRAWING
 </div>
 </section>
 
+</div>
+
+<!-- FULLSCREEN REVEAL SCREEN -->
+<div id="revealScreen" class="hidden">
+ <div class="reveal-header">
+  <h2>🎉 DRAWING REVEAL!</h2>
+  <button class="red" onclick="closeFullscreenReveal()">✖ CLOSE</button>
+ </div>
+ <div id="fullscreenGallery"></div>
 </div>
 
 <!-- Firebase SDK -->
@@ -240,6 +303,7 @@ let drawing = false;
 let history = [];
 let roundActive = false;
 let isTeacher = false;
+let currentDuration = 20;
 
 const $ = id => document.getElementById(id);
 
@@ -270,6 +334,59 @@ function showStudent() {
 }
 
 /* =========================================
+   SETTINGS
+========================================= */
+
+function toggleSettings() {
+    $("settingsPanel").classList.toggle("hidden");
+}
+
+function getDurationFromInputs() {
+    let minutes = Math.max(0, Math.min(99, Number($("durationMinutes").value) || 0));
+    let seconds = Math.max(0, Math.min(59, Number($("durationSeconds").value) || 0));
+
+    $("durationMinutes").value = minutes;
+    $("durationSeconds").value = seconds;
+
+    return (minutes * 60) + seconds;
+}
+
+function formatTime(totalSeconds) {
+    totalSeconds = Math.max(0, Math.floor(totalSeconds));
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+
+    return String(minutes).padStart(2,"0") + ":" +
+           String(seconds).padStart(2,"0");
+}
+
+function saveSettings() {
+    let duration = getDurationFromInputs();
+
+    if (duration < 1) {
+        alert("Please set the timer to at least 1 second.");
+        return;
+    }
+
+    currentDuration = duration;
+
+    let prompt = $("promptInput").value.trim() || "Draw something!";
+    $("promptInput").value = prompt;
+    $("teacherPromptPreview").textContent = prompt;
+
+    $("teacherTimer").textContent = formatTime(duration);
+
+    if (db && room) {
+        db.ref("rooms/" + room).update({
+            prompt: prompt,
+            duration: duration
+        }).catch(e => alert("Could not save settings: " + e.message));
+    }
+
+    $("settingsPanel").classList.add("hidden");
+}
+
+/* =========================================
    FIREBASE INITIALIZATION
 ========================================= */
 
@@ -283,8 +400,6 @@ function initFirebase() {
             firebase.initializeApp(firebaseConfig);
         }
 
-        // Try long polling to help networks where WebSockets
-        // cannot establish a stable Firebase connection.
         if (
             firebase.database.INTERNAL &&
             typeof firebase.database.INTERNAL.forceLongPolling === "function"
@@ -366,6 +481,13 @@ async function createRoom() {
         });
 
         $("roomCode").textContent = room;
+        $("promptInput").value = "Draw a picnic basket!";
+        $("teacherPromptPreview").textContent = "Draw a picnic basket!";
+        $("durationMinutes").value = 0;
+        $("durationSeconds").value = 20;
+        currentDuration = 20;
+        $("teacherTimer").textContent = "00:20";
+
         showPage("teacherRoom");
         listenToRoom();
 
@@ -394,12 +516,32 @@ function listenToRoom() {
     });
 
     db.ref("rooms/" + room + "/prompt").on("value", s => {
-        if (s.val()) $("promptInput").value = s.val();
+        if (s.val()) {
+            $("promptInput").value = s.val();
+            $("teacherPromptPreview").textContent = s.val();
+        }
+    });
+
+    db.ref("rooms/" + room + "/duration").on("value", s => {
+        let duration = Number(s.val()) || 20;
+        currentDuration = duration;
+        $("durationMinutes").value = Math.floor(duration / 60);
+        $("durationSeconds").value = duration % 60;
+        if (!roundEndsAt) {
+            $("teacherTimer").textContent = formatTime(duration);
+        }
     });
 
     db.ref("rooms/" + room + "/endsAt").on("value", s => {
         roundEndsAt = s.val() || 0;
         updateTimers();
+    });
+
+    db.ref("rooms/" + room + "/revealed").on("value", s => {
+        revealed = !!s.val();
+        if (revealed) {
+            renderGalleryFromDatabase();
+        }
     });
 }
 
@@ -460,7 +602,7 @@ async function joinRoom() {
 
         showPage("studentDrawing");
 
-        setTimeout(setupCanvas, 100);
+        setTimeout(setupCanvas, 150);
 
         listenForRound();
         listenForReveal();
@@ -487,6 +629,7 @@ function listenForRound() {
 
         roundEndsAt = v.endsAt || 0;
         roundActive = !!v.roundActive;
+        currentDuration = Number(v.duration) || 20;
 
         updateTimers();
 
@@ -503,7 +646,16 @@ function startRound() {
     if (!db || !room) return;
 
     let prompt = $("promptInput").value.trim() || "Draw something!";
-    let duration = Number($("duration").value) || 20;
+    let duration = getDurationFromInputs();
+
+    if (duration < 1) {
+        alert("Please set the timer to at least 1 second in Settings.");
+        $("settingsPanel").classList.remove("hidden");
+        return;
+    }
+
+    currentDuration = duration;
+    $("teacherPromptPreview").textContent = prompt;
 
     db.ref("rooms/" + room).update({
         prompt: prompt,
@@ -516,6 +668,7 @@ function startRound() {
     })
     .then(() => {
         revealed = false;
+        closeFullscreenReveal();
         clearCanvas();
         $("message").textContent = "";
         updateTimers();
@@ -547,12 +700,11 @@ function updateTimers() {
 
         let left = roundEndsAt
             ? Math.max(0, Math.ceil((roundEndsAt - Date.now()) / 1000))
-            : Number($("duration")?.value || 20);
+            : currentDuration;
 
-        $("teacherTimer").textContent = left;
-        $("studentTimer").textContent = left;
+        $("teacherTimer").textContent = formatTime(left);
+        $("studentTimer").textContent = formatTime(left);
 
-        // Only the teacher ends the round in Firebase.
         if (
             isTeacher &&
             roundEndsAt &&
@@ -594,10 +746,12 @@ const ctx = canvas.getContext("2d");
 function setupCanvas() {
 
     let rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
     let dpr = window.devicePixelRatio || 1;
 
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -620,8 +774,12 @@ canvas.addEventListener("pointerdown", e => {
 
     if (!roundActive) return;
 
+    e.preventDefault();
     drawing = true;
-    canvas.setPointerCapture(e.pointerId);
+
+    try {
+        canvas.setPointerCapture(e.pointerId);
+    } catch(err) {}
 
     history.push(canvas.toDataURL());
 
@@ -635,9 +793,11 @@ canvas.addEventListener("pointermove", e => {
 
     if (!drawing) return;
 
+    e.preventDefault();
+
     let p = pos(e);
 
-    ctx.lineWidth = $("brush").value;
+    ctx.lineWidth = Number($("brush").value);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = $("color").value;
@@ -647,7 +807,10 @@ canvas.addEventListener("pointermove", e => {
 });
 
 ["pointerup","pointercancel","pointerleave"].forEach(n => {
-    canvas.addEventListener(n, () => drawing = false);
+    canvas.addEventListener(n, () => {
+        drawing = false;
+        ctx.beginPath();
+    });
 });
 
 function clearCanvas() {
@@ -720,35 +883,69 @@ async function submitDrawing() {
    TEACHER GALLERY
 ========================================= */
 
+function makeDrawingCard(d, fullscreen = false) {
+
+    let card = document.createElement("div");
+    card.className = "drawing-card";
+
+    let img = document.createElement("img");
+    img.alt = "Student drawing";
+    img.src = d.image || "";
+
+    let p = document.createElement("p");
+    p.textContent = d.name || "Student";
+
+    card.append(img, p);
+    return card;
+}
+
 function renderGallery(drawings) {
 
     let g = $("gallery");
+    let full = $("fullscreenGallery");
+
     g.innerHTML = "";
+    full.innerHTML = "";
 
-    Object.entries(drawings).forEach(([id, d]) => {
+    let entries = Object.values(drawings || {});
 
-        let card = document.createElement("div");
-        card.className = "drawing-card";
+    if (!entries.length) {
+        g.innerHTML = '<p class="small">No drawings submitted yet.</p>';
+        full.innerHTML = '<div class="reveal-empty">No drawings submitted yet.</div>';
+        return;
+    }
 
-        let img = document.createElement("img");
-        img.alt = "Student drawing";
+    entries.forEach(d => {
 
         if (revealed) {
-            img.src = d.image;
+            g.append(makeDrawingCard(d));
+            full.append(makeDrawingCard(d, true));
         } else {
-            img.style.height = "160px";
-            img.style.background = "#e9edfa";
+            let card = document.createElement("div");
+            card.className = "drawing-card";
+
+            let placeholder = document.createElement("div");
+            placeholder.style.height = "160px";
+            placeholder.style.background = "#e9edfa";
+            placeholder.style.display = "grid";
+            placeholder.style.placeItems = "center";
+            placeholder.style.fontSize = "36px";
+            placeholder.textContent = "🔒";
+
+            let p = document.createElement("p");
+            p.textContent = "Hidden Drawing";
+
+            card.append(placeholder, p);
+            g.append(card);
         }
-
-        let p = document.createElement("p");
-
-        p.textContent = revealed
-            ? (d.name || "Student")
-            : "🔒 Hidden Drawing";
-
-        card.append(img, p);
-        g.append(card);
     });
+}
+
+async function renderGalleryFromDatabase() {
+    if (!db || !room) return;
+
+    let s = await db.ref("rooms/" + room + "/drawings").once("value");
+    renderGallery(s.val() || {});
 }
 
 async function revealDrawings() {
@@ -759,9 +956,9 @@ async function revealDrawings() {
 
     await db.ref("rooms/" + room + "/revealed").set(true);
 
-    let s = await db.ref("rooms/" + room + "/drawings").once("value");
+    await renderGalleryFromDatabase();
 
-    renderGallery(s.val() || {});
+    openFullscreenReveal();
 }
 
 function hideDrawings() {
@@ -770,11 +967,33 @@ function hideDrawings() {
 
     if (!db || !room) return;
 
+    closeFullscreenReveal();
+
     db.ref("rooms/" + room + "/revealed").set(false);
 
     db.ref("rooms/" + room + "/drawings")
     .once("value")
     .then(s => renderGallery(s.val() || {}));
+}
+
+/* =========================================
+   FULLSCREEN REVEAL
+========================================= */
+
+function openFullscreenReveal() {
+    $("revealScreen").classList.remove("hidden");
+
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    }
+}
+
+function closeFullscreenReveal() {
+    $("revealScreen").classList.add("hidden");
+
+    if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+    }
 }
 
 function listenForReveal() {
@@ -809,6 +1028,8 @@ async function clearRoom() {
         revealed = false;
         roundActive = false;
 
+        closeFullscreenReveal();
+
         $("message").textContent = "";
         $("studentStatus").textContent =
             "Waiting for the teacher to start the next round.";
@@ -829,6 +1050,14 @@ window.addEventListener("resize", () => {
     if (!$("studentDrawing").classList.contains("hidden")) {
         setupCanvas();
     }
+});
+
+window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+        if (!$("studentDrawing").classList.contains("hidden")) {
+            setupCanvas();
+        }
+    }, 300);
 });
 
 initFirebase();
