@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Draw & Reveal - Classroom Multiplayer</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#101827;color:#edf3ff}
@@ -16,12 +15,13 @@ header p{margin:6px 0 0;color:#b9c9df}
 .panel{background:#fff;color:#26334a;padding:20px;border-radius:16px;margin-bottom:16px;box-shadow:0 5px 18px #0002}
 h2{margin-top:0}
 button{border:0;border-radius:10px;padding:12px 17px;margin:5px;background:#2456c5;color:white;font-size:15px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled{opacity:.45;cursor:not-allowed}
 button.green{background:#159b67}
 button.gray{background:#607d8b}
 button.orange{background:#ed8b27}
 button.red{background:#dc4545}
 button.dark{background:#26334a}
+button.home-btn{background:#34445e}
 input,textarea,select{width:100%;padding:12px;border:2px solid #dce1ec;border-radius:9px;font-size:16px;margin:7px 0;color:#26334a}
 label{font-weight:bold;display:block;margin-top:10px}
 .hidden{display:none!important}
@@ -44,58 +44,31 @@ label{font-weight:bold;display:block;margin-top:10px}
 .timer{font-size:42px;font-weight:bold;text-align:center;color:#d64b38}
 .prompt{font-size:24px;font-weight:bold;text-align:center;background:#f0f4ff;padding:14px;border-radius:10px}
 .small{font-size:13px;color:#607080}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>*{flex:1;min-width:130px}
+.teacher-actions{display:flex;flex-wrap:wrap;gap:8px}
+.teacher-actions button{flex:1;min-width:140px}
 #message{text-align:center;font-weight:bold;padding:10px}
-.settings-box{background:#f0f4ff;padding:16px;border-radius:12px;margin-top:12px}
-.time-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.teacher-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.teacher-actions button{flex:1;min-width:145px}
-
-/* FULLSCREEN REVEAL */
-#revealScreen{
- position:fixed;inset:0;z-index:9999;
- background:#101827;color:white;
- padding:15px;overflow-y:auto;
- display:flex;flex-direction:column;
-}
+.hands-up{font-size:clamp(38px,9vw,90px);font-weight:900;text-align:center;color:#0b965b;padding:22px 8px;animation:flash .7s steps(2,start) infinite;background:#e7fff1;border-radius:18px;margin:10px 0}
+@keyframes flash{to{visibility:hidden}}
+.tool-active{outline:4px solid #f6c744;outline-offset:1px}
+#revealScreen{position:fixed;inset:0;z-index:9999;background:#101827;color:white;padding:15px;overflow-y:auto;display:flex;flex-direction:column}
 #revealScreen.hidden{display:none!important}
-.reveal-header{
- display:flex;justify-content:space-between;align-items:center;
- gap:10px;flex-wrap:wrap;margin-bottom:12px;
-}
+.reveal-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .reveal-header h2{margin:0;font-size:clamp(22px,4vw,34px)}
-#fullscreenGallery{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));
- gap:16px;align-items:start;
-}
-#fullscreenGallery .drawing-card{
- background:white;border:3px solid white;
-}
-#fullscreenGallery .drawing-card img{
- width:100%;height:auto;max-height:65vh;
- object-fit:contain;background:white;
-}
-#fullscreenGallery .drawing-card p{
- font-size:20px;padding:12px;
-}
-.reveal-empty{
- text-align:center;font-size:22px;padding:40px 10px;
- color:#dce8f8;
-}
+#fullscreenGallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px;align-items:start}
+#fullscreenGallery .drawing-card{background:white;border:3px solid white}
+#fullscreenGallery .drawing-card img{width:100%;height:auto;max-height:65vh;object-fit:contain;background:white}
+#fullscreenGallery .drawing-card p{font-size:20px;padding:12px}
+.reveal-empty{text-align:center;font-size:22px;padding:40px 10px;color:#dce8f8}
 @media(max-width:600px){
- .role-grid{grid-template-columns:1fr}
- #canvas{height:330px}
- .container{padding:10px}
- .panel{padding:15px}
- .time-inputs{grid-template-columns:1fr 1fr}
- #fullscreenGallery{grid-template-columns:1fr}
- #fullscreenGallery .drawing-card img{max-height:55vh}
+.role-grid{grid-template-columns:1fr}
+#canvas{height:330px}
+.container{padding:10px}
+.panel{padding:15px}
+#fullscreenGallery{grid-template-columns:1fr}
+#fullscreenGallery .drawing-card img{max-height:55vh}
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -108,14 +81,12 @@ label{font-weight:bold;display:block;margin-top:10px}
 <section id="home" class="panel">
 <h2 style="text-align:center">Welcome!</h2>
 <p style="text-align:center">Choose your role to begin.</p>
-
 <div class="role-grid">
 <div class="role-card" onclick="showTeacher()">
 <div class="emoji">👩‍🏫</div>
 <h2>TEACHER</h2>
 <p>Create a drawing room</p>
 </div>
-
 <div class="role-card" onclick="showStudent()">
 <div class="emoji">✏️</div>
 <h2>STUDENT</h2>
@@ -126,21 +97,10 @@ label{font-weight:bold;display:block;margin-top:10px}
 
 <section id="teacherSetup" class="panel hidden">
 <h2>👩‍🏫 Teacher Dashboard</h2>
-
-<div id="firebaseStatus" class="status">
-Checking Firebase connection…
-</div>
-
-<p class="small">
-Firebase is automatically configured.
-No need to paste the configuration again.
-</p>
-
-<button class="green" onclick="createRoom()" id="createBtn">
-CREATE NEW ROOM
-</button>
-
-<button class="gray" onclick="goHome()">Back</button>
+<div id="firebaseStatus" class="status">Checking Firebase connection…</div>
+<p class="small">Firebase is automatically configured. No need to paste configuration.</p>
+<button class="green" onclick="createRoom()" id="createBtn">CREATE NEW ROOM</button>
+<button class="gray home-btn" onclick="goHome()">🏠 HOME</button>
 </section>
 
 <section id="teacherRoom" class="hidden">
@@ -148,54 +108,34 @@ CREATE NEW ROOM
 <div class="panel">
 <h2>🎯 Your Room</h2>
 <p>Ask students to enter this room code:</p>
-
 <div class="room-code" id="roomCode">------</div>
-
 <button class="gray" onclick="copyRoomCode()">COPY ROOM CODE</button>
 <button class="dark" onclick="toggleSettings()">⚙️ SETTINGS</button>
-
+<button class="gray home-btn" onclick="goHome()">🏠 HOME</button>
 <div id="teacherStatus" class="status">Room status: waiting</div>
-
 <div class="stats">
 <div class="stat">Students connected: <strong id="studentCount">0</strong></div>
 <div class="stat">Drawings submitted: <strong id="drawingCount">0</strong></div>
 </div>
 </div>
 
-<!-- SETTINGS PANEL -->
 <div id="settingsPanel" class="panel hidden">
 <h2>⚙️ Game Settings</h2>
-
-<label>What should students draw?</label>
+<label>Drawing prompt</label>
 <input id="promptInput" value="Draw a picnic basket!">
-
-<label>Set the timer</label>
-<p class="small">Enter the number of minutes and seconds.</p>
-
-<div class="time-inputs">
-<div>
-<label for="durationMinutes">Minutes</label>
+<label>Timer — minutes</label>
 <input id="durationMinutes" type="number" min="0" max="99" value="0">
-</div>
-<div>
-<label for="durationSeconds">Seconds</label>
+<label>Timer — seconds</label>
 <input id="durationSeconds" type="number" min="0" max="59" value="20">
-</div>
-</div>
-
 <p class="small">Example: 2 minutes and 30 seconds.</p>
-
 <button class="green" onclick="saveSettings()">SAVE SETTINGS</button>
-<button class="gray" onclick="toggleSettings()">CLOSE SETTINGS</button>
+<button class="gray" onclick="toggleSettings()">CLOSE</button>
 </div>
 
 <div class="panel">
 <h2>🎤 Drawing Challenge</h2>
-
 <div class="prompt" id="teacherPromptPreview">Draw a picnic basket!</div>
-
 <div class="timer" id="teacherTimer">00:20</div>
-
 <div class="teacher-actions">
 <button class="green" onclick="startRound()">START DRAWING ROUND</button>
 <button class="orange" onclick="stopRound()">STOP TIMER</button>
@@ -204,11 +144,9 @@ CREATE NEW ROOM
 
 <div class="panel">
 <h2>🖼️ Drawing Gallery</h2>
-
 <button class="green" onclick="revealDrawings()">REVEAL ALL DRAWINGS</button>
 <button class="gray" onclick="hideDrawings()">HIDE DRAWINGS</button>
 <button class="red" onclick="clearRoom()">CLEAR ROUND</button>
-
 <div id="gallery" class="gallery"></div>
 </div>
 
@@ -216,26 +154,20 @@ CREATE NEW ROOM
 
 <section id="studentSetup" class="panel hidden">
 <h2>✏️ Join the Drawing Room</h2>
-
 <label>Your name or team name</label>
 <input id="studentName" placeholder="Enter your name">
-
 <label>Room code</label>
 <input id="joinCode" placeholder="Enter room code" maxlength="6" style="text-transform:uppercase">
-
 <button class="green" onclick="joinRoom()">JOIN ROOM</button>
-<button class="gray" onclick="goHome()">Back</button>
+<button class="gray home-btn" onclick="goHome()">🏠 HOME</button>
 </section>
 
 <section id="studentDrawing" class="hidden">
 <div class="panel">
-
 <h2>🎨 Let's Draw!</h2>
-
-<div id="studentStatus" class="status">Waiting for the teacher…</div>
-
+<button class="gray home-btn" onclick="studentGoHome()">🏠 HOME</button>
+<div id="studentStatus" class="status">Waiting for teacher…</div>
 <div class="prompt" id="studentPrompt">Get ready!</div>
-
 <div class="timer" id="studentTimer">00:20</div>
 
 <canvas id="canvas"></canvas>
@@ -243,821 +175,747 @@ CREATE NEW ROOM
 <div class="toolbar">
 <label>Color</label>
 <input type="color" id="color" value="#222222">
-
 <label>Brush</label>
 <input type="range" id="brush" min="2" max="30" value="6">
-
-<button class="gray" onclick="clearCanvas()">CLEAR</button>
+<button id="pencilBtn" class="dark tool-active" onclick="setTool('pencil')">✏️ PENCIL</button>
+<button id="eraserBtn" class="gray" onclick="setTool('eraser')">🧽 ERASER</button>
+<button class="gray" onclick="clearCanvas()">CLEAR ALL</button>
 <button class="orange" onclick="undoDrawing()">UNDO</button>
 </div>
 
-<button class="green" onclick="submitDrawing()" id="submitBtn" disabled>
-SUBMIT DRAWING
-</button>
-
+<button class="green" onclick="submitDrawing()" id="submitBtn" disabled>SUBMIT DRAWING</button>
 <div id="message"></div>
 
+<div id="handsUp" class="hands-up hidden">
+🙌 HANDS UP! 🙌
+<div style="font-size:24px">You're finished! Wait for the teacher.</div>
+</div>
+
+<button id="nextBtn" class="orange hidden" onclick="studentNext()">➡️ NEXT DRAWING</button>
 </div>
 </section>
 
 </div>
 
-<!-- FULLSCREEN REVEAL SCREEN -->
 <div id="revealScreen" class="hidden">
- <div class="reveal-header">
-  <h2>🎉 DRAWING REVEAL!</h2>
-  <button class="red" onclick="closeFullscreenReveal()">✖ CLOSE</button>
- </div>
- <div id="fullscreenGallery"></div>
+<div class="reveal-header">
+<h2>🎉 DRAWING REVEAL!</h2>
+<button class="red" onclick="closeFullscreenReveal()">✖ CLOSE</button>
+</div>
+<div id="fullscreenGallery"></div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
 
-/* =========================================
-   FIREBASE CONFIGURATION
-========================================= */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCQsoC3mYX8n9OPt0ReBCkiX9pMg9YxE34",
-  authDomain: "drawing-reveal.firebaseapp.com",
-  databaseURL: "https://drawing-reveal-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "drawing-reveal",
-  storageBucket: "drawing-reveal.firebasestorage.app",
-  messagingSenderId: "120401215529",
-  appId: "1:120401215529:web:a3f17cb8fe0c6ea8765c38",
-  measurementId: "G-NFWGH0J75B"
+const firebaseConfig={
+apiKey:"AIzaSyCQsoC3mYX8n9OPt0ReBCkiX9pMg9YxE34",
+authDomain:"drawing-reveal.firebaseapp.com",
+databaseURL:"https://drawing-reveal-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"drawing-reveal",
+storageBucket:"drawing-reveal.firebasestorage.app",
+messagingSenderId:"120401215529",
+appId:"1:120401215529:web:a3f17cb8fe0c6ea8765c38",
+measurementId:"G-NFWGH0J75B"
 };
 
-let db = null;
-let room = "";
-let studentId = "";
-let studentName = "";
-let revealed = false;
-let roundEndsAt = 0;
-let timerInterval = null;
-let drawing = false;
-let history = [];
-let roundActive = false;
-let isTeacher = false;
-let currentDuration = 20;
+let db=null;
+let room="";
+let studentId="";
+let studentName="";
+let revealed=false;
+let roundEndsAt=0;
+let timerInterval=null;
+let drawing=false;
+let history=[];
+let roundActive=false;
+let isTeacher=false;
+let currentDuration=20;
+let submitted=false;
+let tool="pencil";
+let lastRoundId=0;
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-/* =========================================
-   PAGE NAVIGATION
-========================================= */
-
-function showPage(id) {
-    ["home","teacherSetup","teacherRoom","studentSetup","studentDrawing"]
-    .forEach(p => $(p).classList.add("hidden"));
-
-    $(id).classList.remove("hidden");
+function showPage(id){
+["home","teacherSetup","teacherRoom","studentSetup","studentDrawing"]
+.forEach(p=>$(p).classList.add("hidden"));
+$(id).classList.remove("hidden");
 }
 
-function goHome() {
-    showPage("home");
+function goHome(){
+showPage("home");
 }
 
-function showTeacher() {
-    isTeacher = true;
-    showPage("teacherSetup");
-    updateFirebaseStatus();
+function studentGoHome(){
+if(db&&room&&studentId){
+db.ref(`rooms/${room}/students/${studentId}`).remove().catch(()=>{});
+}
+studentId="";
+studentName="";
+submitted=false;
+showPage("home");
 }
 
-function showStudent() {
-    isTeacher = false;
-    showPage("studentSetup");
+function showTeacher(){
+isTeacher=true;
+showPage("teacherSetup");
+updateFirebaseStatus();
 }
 
-/* =========================================
-   SETTINGS
-========================================= */
-
-function toggleSettings() {
-    $("settingsPanel").classList.toggle("hidden");
+function showStudent(){
+isTeacher=false;
+showPage("studentSetup");
 }
 
-function getDurationFromInputs() {
-    let minutes = Math.max(0, Math.min(99, Number($("durationMinutes").value) || 0));
-    let seconds = Math.max(0, Math.min(59, Number($("durationSeconds").value) || 0));
-
-    $("durationMinutes").value = minutes;
-    $("durationSeconds").value = seconds;
-
-    return (minutes * 60) + seconds;
+function toggleSettings(){
+$("settingsPanel").classList.toggle("hidden");
 }
 
-function formatTime(totalSeconds) {
-    totalSeconds = Math.max(0, Math.floor(totalSeconds));
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-
-    return String(minutes).padStart(2,"0") + ":" +
-           String(seconds).padStart(2,"0");
+function durationInput(){
+let m=Math.max(0,Math.min(99,parseInt($("durationMinutes").value)||0));
+let s=Math.max(0,Math.min(59,parseInt($("durationSeconds").value)||0));
+$("durationMinutes").value=m;
+$("durationSeconds").value=s;
+return m*60+s;
 }
 
-function saveSettings() {
-    let duration = getDurationFromInputs();
-
-    if (duration < 1) {
-        alert("Please set the timer to at least 1 second.");
-        return;
-    }
-
-    currentDuration = duration;
-
-    let prompt = $("promptInput").value.trim() || "Draw something!";
-    $("promptInput").value = prompt;
-    $("teacherPromptPreview").textContent = prompt;
-
-    $("teacherTimer").textContent = formatTime(duration);
-
-    if (db && room) {
-        db.ref("rooms/" + room).update({
-            prompt: prompt,
-            duration: duration
-        }).catch(e => alert("Could not save settings: " + e.message));
-    }
-
-    $("settingsPanel").classList.add("hidden");
+function formatTime(sec){
+sec=Math.max(0,Math.floor(sec));
+return String(Math.floor(sec/60)).padStart(2,"0")+":" +
+String(sec%60).padStart(2,"0");
 }
 
-/* =========================================
-   FIREBASE INITIALIZATION
-========================================= */
+function initFirebase(){
+try{
+if(typeof firebase==="undefined")throw Error("Firebase SDK failed to load");
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
 
-function initFirebase() {
-    try {
-        if (typeof firebase === "undefined") {
-            throw new Error("Firebase SDK files did not load.");
-        }
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        if (
-            firebase.database.INTERNAL &&
-            typeof firebase.database.INTERNAL.forceLongPolling === "function"
-        ) {
-            firebase.database.INTERNAL.forceLongPolling();
-        }
-
-        db = firebase.database();
-
-        $("firebaseStatus").textContent =
-            "🟠 Firebase initialized. Connecting...";
-
-        db.ref(".info/connected").on(
-            "value",
-            snapshot => {
-                const connected = snapshot.val() === true;
-
-                $("firebaseStatus").textContent = connected
-                    ? "🟢 Connected to Firebase!"
-                    : "🟠 Connecting to Firebase…";
-            },
-            error => {
-                $("firebaseStatus").textContent =
-                    "🔴 Firebase connection error: " + error.message;
-                console.error("Firebase connection listener error:", error);
-            }
-        );
-
-        return true;
-
-    } catch(e) {
-        console.error("Firebase initialization error:", e);
-        db = null;
-
-        $("firebaseStatus").textContent =
-            "🔴 Firebase setup error: " + e.message;
-
-        return false;
-    }
+if(firebase.database.INTERNAL&&
+typeof firebase.database.INTERNAL.forceLongPolling==="function"){
+firebase.database.INTERNAL.forceLongPolling();
 }
 
-function updateFirebaseStatus() {
-    if (!db) {
-        $("firebaseStatus").textContent =
-            "🔴 Firebase is not initialized. Check the SDK and configuration.";
-    }
-}
-
-/* =========================================
-   ROOM CREATION
-========================================= */
-
-function generateCode() {
-    return Math.random().toString(36).substring(2,8).toUpperCase();
-}
-
-async function createRoom() {
-
-    if (!db) {
-        alert("Firebase is not initialized. Please check the connection.");
-        return;
-    }
-
-    $("createBtn").disabled = true;
-
-    try {
-        room = generateCode();
-
-        await db.ref("rooms/" + room).set({
-            createdAt: firebase.database.ServerValue.TIMESTAMP,
-            status: "waiting",
-            revealed: false,
-            roundActive: false,
-            drawings: {},
-            students: {},
-            prompt: "Draw a picnic basket!",
-            duration: 20,
-            endsAt: 0
-        });
-
-        $("roomCode").textContent = room;
-        $("promptInput").value = "Draw a picnic basket!";
-        $("teacherPromptPreview").textContent = "Draw a picnic basket!";
-        $("durationMinutes").value = 0;
-        $("durationSeconds").value = 20;
-        currentDuration = 20;
-        $("teacherTimer").textContent = "00:20";
-
-        showPage("teacherRoom");
-        listenToRoom();
-
-    } catch(e) {
-        console.error(e);
-        alert("Could not create room: " + e.message);
-    }
-
-    $("createBtn").disabled = false;
-}
-
-function listenToRoom() {
-
-    db.ref("rooms/" + room + "/students").on("value", s => {
-        $("studentCount").textContent = s.numChildren();
-    });
-
-    db.ref("rooms/" + room + "/drawings").on("value", s => {
-        $("drawingCount").textContent = s.numChildren();
-        renderGallery(s.val() || {});
-    });
-
-    db.ref("rooms/" + room + "/status").on("value", s => {
-        $("teacherStatus").textContent =
-            "Room status: " + (s.val() || "waiting");
-    });
-
-    db.ref("rooms/" + room + "/prompt").on("value", s => {
-        if (s.val()) {
-            $("promptInput").value = s.val();
-            $("teacherPromptPreview").textContent = s.val();
-        }
-    });
-
-    db.ref("rooms/" + room + "/duration").on("value", s => {
-        let duration = Number(s.val()) || 20;
-        currentDuration = duration;
-        $("durationMinutes").value = Math.floor(duration / 60);
-        $("durationSeconds").value = duration % 60;
-        if (!roundEndsAt) {
-            $("teacherTimer").textContent = formatTime(duration);
-        }
-    });
-
-    db.ref("rooms/" + room + "/endsAt").on("value", s => {
-        roundEndsAt = s.val() || 0;
-        updateTimers();
-    });
-
-    db.ref("rooms/" + room + "/revealed").on("value", s => {
-        revealed = !!s.val();
-        if (revealed) {
-            renderGalleryFromDatabase();
-        }
-    });
-}
-
-function copyRoomCode() {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(room)
-        .then(() => alert("Room code copied!"))
-        .catch(() => alert("Room code: " + room));
-    } else {
-        alert("Room code: " + room);
-    }
-}
-
-/* =========================================
-   STUDENT JOINING
-========================================= */
-
-async function joinRoom() {
-
-    if (!db) {
-        alert("Firebase is not initialized on this device. Please check the connection.");
-        return;
-    }
-
-    studentName = $("studentName").value.trim();
-    room = $("joinCode").value.trim().toUpperCase();
-
-    if (!studentName || !room) {
-        alert("Please enter your name and room code.");
-        return;
-    }
-
-    try {
-        let ref = db.ref("rooms/" + room);
-        let s = await ref.once("value");
-
-        if (!s.exists()) {
-            alert("Room not found. Check the room code.");
-            return;
-        }
-
-        if (s.child("status").val() === "closed") {
-            alert("This room is closed.");
-            return;
-        }
-
-        studentId = db.ref("rooms/" + room + "/students").push().key;
-
-        await db.ref("rooms/" + room + "/students/" + studentId).set({
-            name: studentName,
-            joinedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        db.ref("rooms/" + room + "/students/" + studentId)
-        .onDisconnect().remove();
-
-        $("studentStatus").textContent = "🟢 Joined room " + room;
-
-        showPage("studentDrawing");
-
-        setTimeout(setupCanvas, 150);
-
-        listenForRound();
-        listenForReveal();
-
-    } catch(e) {
-        console.error(e);
-        alert("Could not join: " + e.message);
-    }
-}
-
-/* =========================================
-   ROUND LISTENING
-========================================= */
-
-function listenForRound() {
-
-    db.ref("rooms/" + room).on("value", s => {
-
-        let v = s.val();
-        if (!v) return;
-
-        $("studentPrompt").textContent =
-            v.prompt || "Draw something!";
-
-        roundEndsAt = v.endsAt || 0;
-        roundActive = !!v.roundActive;
-        currentDuration = Number(v.duration) || 20;
-
-        updateTimers();
-
-        $("submitBtn").disabled = !roundActive;
-
-        $("studentStatus").textContent = roundActive
-            ? "🟢 Drawing time! Submit before the timer ends."
-            : "Waiting for the teacher to start the next round.";
-    });
-}
-
-function startRound() {
-
-    if (!db || !room) return;
-
-    let prompt = $("promptInput").value.trim() || "Draw something!";
-    let duration = getDurationFromInputs();
-
-    if (duration < 1) {
-        alert("Please set the timer to at least 1 second in Settings.");
-        $("settingsPanel").classList.remove("hidden");
-        return;
-    }
-
-    currentDuration = duration;
-    $("teacherPromptPreview").textContent = prompt;
-
-    db.ref("rooms/" + room).update({
-        prompt: prompt,
-        duration: duration,
-        roundActive: true,
-        revealed: false,
-        status: "drawing",
-        endsAt: Date.now() + duration * 1000,
-        drawings: {}
-    })
-    .then(() => {
-        revealed = false;
-        closeFullscreenReveal();
-        clearCanvas();
-        $("message").textContent = "";
-        updateTimers();
-    })
-    .catch(e => alert("Could not start round: " + e.message));
-}
-
-function stopRound() {
-
-    if (!db || !room) return;
-
-    db.ref("rooms/" + room).update({
-        roundActive: false,
-        status: "waiting",
-        endsAt: 0
-    });
-
-    roundActive = false;
-    updateTimers();
-}
-
-/* =========================================
-   TIMER
-========================================= */
-
-function updateTimers() {
-
-    function tick() {
-
-        let left = roundEndsAt
-            ? Math.max(0, Math.ceil((roundEndsAt - Date.now()) / 1000))
-            : currentDuration;
-
-        $("teacherTimer").textContent = formatTime(left);
-        $("studentTimer").textContent = formatTime(left);
-
-        if (
-            isTeacher &&
-            roundEndsAt &&
-            Date.now() >= roundEndsAt &&
-            roundActive
-        ) {
-            roundActive = false;
-
-            db.ref("rooms/" + room).update({
-                roundActive: false,
-                status: "time up",
-                endsAt: 0
-            });
-        }
-
-        if (
-            $("submitBtn") &&
-            roundEndsAt &&
-            Date.now() >= roundEndsAt
-        ) {
-            $("submitBtn").disabled = true;
-        }
-    }
-
-    tick();
-
-    if (timerInterval) clearInterval(timerInterval);
-
-    timerInterval = setInterval(tick, 250);
-}
-
-/* =========================================
-   DRAWING CANVAS
-========================================= */
-
-const canvas = $("canvas");
-const ctx = canvas.getContext("2d");
-
-function setupCanvas() {
-
-    let rect = canvas.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-
-    let dpr = window.devicePixelRatio || 1;
-
-    canvas.width = Math.round(rect.width * dpr);
-    canvas.height = Math.round(rect.height * dpr);
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, rect.width, rect.height);
-
-    history = [];
-}
-
-function pos(e) {
-    let r = canvas.getBoundingClientRect();
-
-    return {
-        x: e.clientX - r.left,
-        y: e.clientY - r.top
-    };
-}
-
-canvas.addEventListener("pointerdown", e => {
-
-    if (!roundActive) return;
-
-    e.preventDefault();
-    drawing = true;
-
-    try {
-        canvas.setPointerCapture(e.pointerId);
-    } catch(err) {}
-
-    history.push(canvas.toDataURL());
-
-    let p = pos(e);
-
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
+db=firebase.database();
+$("firebaseStatus").textContent="🟠 Connecting…";
+
+db.ref(".info/connected").on("value",s=>{
+$("firebaseStatus").textContent=s.val()
+?"🟢 Connected to Firebase!"
+:"🟠 Connecting…";
 });
 
-canvas.addEventListener("pointermove", e => {
+return true;
+}catch(e){
+db=null;
+$("firebaseStatus").textContent="🔴 Firebase error: "+e.message;
+console.error(e);
+return false;
+}
+}
 
-    if (!drawing) return;
+function updateFirebaseStatus(){
+if(!db){
+$("firebaseStatus").textContent=
+"🔴 Firebase not initialized. Check connection/config.";
+}
+}
 
-    e.preventDefault();
+function generateCode(){
+return Math.random().toString(36).substring(2,8).toUpperCase();
+}
 
-    let p = pos(e);
+async function createRoom(){
+if(!db){
+alert("Firebase isn't connected yet.");
+return;
+}
 
-    ctx.lineWidth = Number($("brush").value);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = $("color").value;
+$("createBtn").disabled=true;
 
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
+try{
+room=generateCode();
+
+await db.ref("rooms/"+room).set({
+createdAt:firebase.database.ServerValue.TIMESTAMP,
+status:"waiting",
+revealed:false,
+roundActive:false,
+drawings:{},
+students:{},
+prompt:"Draw a picnic basket!",
+duration:20,
+endsAt:0,
+roundId:0
 });
 
-["pointerup","pointercancel","pointerleave"].forEach(n => {
-    canvas.addEventListener(n, () => {
-        drawing = false;
-        ctx.beginPath();
-    });
+$("roomCode").textContent=room;
+$("promptInput").value="Draw a picnic basket!";
+$("teacherPromptPreview").textContent="Draw a picnic basket!";
+$("durationMinutes").value=0;
+$("durationSeconds").value=20;
+currentDuration=20;
+$("teacherTimer").textContent="00:20";
+
+showPage("teacherRoom");
+listenToRoom();
+
+}catch(e){
+console.error(e);
+alert("Room creation failed: "+e.message);
+}
+
+$("createBtn").disabled=false;
+}
+
+function listenToRoom(){
+
+db.ref(`rooms/${room}/students`).on("value",s=>{
+$("studentCount").textContent=s.numChildren();
 });
 
-function clearCanvas() {
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.restore();
-    history = [];
-}
-
-function undoDrawing() {
-
-    if (!history.length) return;
-
-    let src = history.pop();
-    let img = new Image();
-
-    img.onload = () => {
-
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        ctx.restore();
-    };
-
-    img.src = src;
-}
-
-/* =========================================
-   SUBMIT DRAWING
-========================================= */
-
-async function submitDrawing() {
-
-    if (!studentId || !room || !roundActive) {
-        $("message").textContent = "The drawing round is not active.";
-        return;
-    }
-
-    let btn = $("submitBtn");
-    btn.disabled = true;
-
-    try {
-
-        let data = canvas.toDataURL("image/jpeg", .65);
-
-        await db.ref("rooms/" + room + "/drawings/" + studentId).set({
-            name: studentName,
-            image: data,
-            submittedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        $("message").textContent = "🎉 Drawing submitted!";
-
-    } catch(e) {
-
-        btn.disabled = false;
-        alert("Submission failed: " + e.message);
-    }
-}
-
-/* =========================================
-   TEACHER GALLERY
-========================================= */
-
-function makeDrawingCard(d, fullscreen = false) {
-
-    let card = document.createElement("div");
-    card.className = "drawing-card";
-
-    let img = document.createElement("img");
-    img.alt = "Student drawing";
-    img.src = d.image || "";
-
-    let p = document.createElement("p");
-    p.textContent = d.name || "Student";
-
-    card.append(img, p);
-    return card;
-}
-
-function renderGallery(drawings) {
-
-    let g = $("gallery");
-    let full = $("fullscreenGallery");
-
-    g.innerHTML = "";
-    full.innerHTML = "";
-
-    let entries = Object.values(drawings || {});
-
-    if (!entries.length) {
-        g.innerHTML = '<p class="small">No drawings submitted yet.</p>';
-        full.innerHTML = '<div class="reveal-empty">No drawings submitted yet.</div>';
-        return;
-    }
-
-    entries.forEach(d => {
-
-        if (revealed) {
-            g.append(makeDrawingCard(d));
-            full.append(makeDrawingCard(d, true));
-        } else {
-            let card = document.createElement("div");
-            card.className = "drawing-card";
-
-            let placeholder = document.createElement("div");
-            placeholder.style.height = "160px";
-            placeholder.style.background = "#e9edfa";
-            placeholder.style.display = "grid";
-            placeholder.style.placeItems = "center";
-            placeholder.style.fontSize = "36px";
-            placeholder.textContent = "🔒";
-
-            let p = document.createElement("p");
-            p.textContent = "Hidden Drawing";
-
-            card.append(placeholder, p);
-            g.append(card);
-        }
-    });
-}
-
-async function renderGalleryFromDatabase() {
-    if (!db || !room) return;
-
-    let s = await db.ref("rooms/" + room + "/drawings").once("value");
-    renderGallery(s.val() || {});
-}
-
-async function revealDrawings() {
-
-    if (!db || !room) return;
-
-    revealed = true;
-
-    await db.ref("rooms/" + room + "/revealed").set(true);
-
-    await renderGalleryFromDatabase();
-
-    openFullscreenReveal();
-}
-
-function hideDrawings() {
-
-    revealed = false;
-
-    if (!db || !room) return;
-
-    closeFullscreenReveal();
-
-    db.ref("rooms/" + room + "/revealed").set(false);
-
-    db.ref("rooms/" + room + "/drawings")
-    .once("value")
-    .then(s => renderGallery(s.val() || {}));
-}
-
-/* =========================================
-   FULLSCREEN REVEAL
-========================================= */
-
-function openFullscreenReveal() {
-    $("revealScreen").classList.remove("hidden");
-
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-    }
-}
-
-function closeFullscreenReveal() {
-    $("revealScreen").classList.add("hidden");
-
-    if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-    }
-}
-
-function listenForReveal() {
-
-    db.ref("rooms/" + room + "/revealed").on("value", s => {
-
-        if (s.val()) {
-            $("studentStatus").textContent =
-                "🎉 The teacher has revealed the drawings!";
-        }
-    });
-}
-
-/* =========================================
-   CLEAR ROUND
-========================================= */
-
-async function clearRoom() {
-
-    if (!confirm("Clear all drawings and start a new round?")) return;
-
-    try {
-
-        await db.ref("rooms/" + room).update({
-            revealed: false,
-            status: "waiting",
-            roundActive: false,
-            endsAt: 0,
-            drawings: {}
-        });
-
-        revealed = false;
-        roundActive = false;
-
-        closeFullscreenReveal();
-
-        $("message").textContent = "";
-        $("studentStatus").textContent =
-            "Waiting for the teacher to start the next round.";
-
-        alert("Round cleared!");
-
-    } catch(e) {
-        alert("Could not clear round: " + e.message);
-    }
-}
-
-/* =========================================
-   START FIREBASE AUTOMATICALLY
-========================================= */
-
-window.addEventListener("resize", () => {
-
-    if (!$("studentDrawing").classList.contains("hidden")) {
-        setupCanvas();
-    }
+db.ref(`rooms/${room}/drawings`).on("value",s=>{
+$("drawingCount").textContent=s.numChildren();
+renderGallery(s.val()||{});
 });
 
-window.addEventListener("orientationchange", () => {
-    setTimeout(() => {
-        if (!$("studentDrawing").classList.contains("hidden")) {
-            setupCanvas();
-        }
-    }, 300);
+db.ref(`rooms/${room}/status`).on("value",s=>{
+$("teacherStatus").textContent="Room status: "+(s.val()||"waiting");
+});
+
+db.ref(`rooms/${room}/prompt`).on("value",s=>{
+if(s.val()){
+$("promptInput").value=s.val();
+$("teacherPromptPreview").textContent=s.val();
+}
+});
+
+db.ref(`rooms/${room}/duration`).on("value",s=>{
+currentDuration=Number(s.val())||20;
+$("durationMinutes").value=Math.floor(currentDuration/60);
+$("durationSeconds").value=currentDuration%60;
+
+if(!roundEndsAt){
+$("teacherTimer").textContent=formatTime(currentDuration);
+}
+});
+
+db.ref(`rooms/${room}/endsAt`).on("value",s=>{
+roundEndsAt=Number(s.val())||0;
+updateTimers();
+});
+
+db.ref(`rooms/${room}/revealed`).on("value",s=>{
+revealed=!!s.val();
+});
+}
+
+function saveSettings(){
+let duration=durationInput();
+
+if(duration<1){
+alert("Set the timer to at least 1 second.");
+return;
+}
+
+currentDuration=duration;
+let prompt=$("promptInput").value.trim()||"Draw something!";
+$("promptInput").value=prompt;
+$("teacherPromptPreview").textContent=prompt;
+
+if(db&&room){
+db.ref(`rooms/${room}`).update({prompt,duration})
+.catch(e=>alert("Save settings failed: "+e.message));
+}
+
+$("teacherTimer").textContent=formatTime(duration);
+$("settingsPanel").classList.add("hidden");
+}
+
+function copyRoomCode(){
+if(navigator.clipboard?.writeText){
+navigator.clipboard.writeText(room)
+.then(()=>alert("Copied room code!"))
+.catch(()=>alert("Room code: "+room));
+}else{
+alert("Room code: "+room);
+}
+}
+
+async function joinRoom(){
+
+if(!db){
+alert("Firebase is not connected.");
+return;
+}
+
+studentName=$("studentName").value.trim();
+room=$("joinCode").value.trim().toUpperCase();
+
+if(!studentName||!room){
+alert("Enter your name and room code.");
+return;
+}
+
+try{
+let ref=db.ref(`rooms/${room}`);
+let snap=await ref.once("value");
+
+if(!snap.exists()){
+alert("Room not found. Check the code.");
+return;
+}
+
+if(snap.child("status").val()==="closed"){
+alert("Room closed.");
+return;
+}
+
+studentId=db.ref(`rooms/${room}/students`).push().key;
+
+await db.ref(`rooms/${room}/students/${studentId}`).set({
+name:studentName,
+joinedAt:firebase.database.ServerValue.TIMESTAMP
+});
+
+db.ref(`rooms/${room}/students/${studentId}`).onDisconnect().remove();
+
+showPage("studentDrawing");
+setTimeout(setupCanvas,150);
+listenForRound();
+listenForReveal();
+
+}catch(e){
+console.error(e);
+alert("Join failed: "+e.message);
+}
+}
+
+function listenForRound(){
+
+db.ref(`rooms/${room}`).on("value",s=>{
+let v=s.val();
+if(!v)return;
+
+$("studentPrompt").textContent=v.prompt||"Draw something!";
+roundEndsAt=Number(v.endsAt)||0;
+roundActive=!!v.roundActive;
+currentDuration=Number(v.duration)||20;
+
+let newRoundId=Number(v.roundId)||0;
+
+if(newRoundId&&newRoundId!==lastRoundId){
+lastRoundId=newRoundId;
+submitted=true;
+clearCanvas();
+$("handsUp").classList.add("hidden");
+$("nextBtn").classList.remove("hidden");
+$("message").textContent=
+"New drawing is ready! Tap NEXT when your teacher says go.";
+}
+
+updateTimers();
+
+if(roundActive&&!submitted){
+$("submitBtn").disabled=false;
+$("studentStatus").textContent=
+"🟢 Drawing time! Submit before the timer ends.";
+}else if(submitted){
+$("submitBtn").disabled=true;
+$("studentStatus").textContent=
+"Drawing submitted—hands up and wait!";
+}else{
+$("submitBtn").disabled=true;
+$("studentStatus").textContent="Waiting for the teacher to start.";
+}
+});
+}
+
+function startRound(){
+
+if(!db||!room)return;
+
+let prompt=$("promptInput").value.trim()||"Draw something!";
+let duration=durationInput();
+
+if(duration<1){
+alert("Set timer in Settings first.");
+$("settingsPanel").classList.remove("hidden");
+return;
+}
+
+currentDuration=duration;
+let newId=Date.now();
+
+db.ref(`rooms/${room}`).update({
+prompt,
+duration,
+roundActive:true,
+revealed:false,
+status:"drawing",
+endsAt:Date.now()+duration*1000,
+roundId:newId,
+drawings:{}
+}).then(()=>{
+revealed=false;
+closeFullscreenReveal();
+$("teacherPromptPreview").textContent=prompt;
+$("teacherTimer").textContent=formatTime(duration);
+}).catch(e=>alert("Start failed: "+e.message));
+}
+
+function stopRound(){
+if(db&&room){
+db.ref(`rooms/${room}`).update({
+roundActive:false,
+status:"waiting",
+endsAt:0
+});
+}
+roundActive=false;
+updateTimers();
+}
+
+function updateTimers(){
+
+function tick(){
+
+let left=roundEndsAt
+?Math.max(0,Math.ceil((roundEndsAt-Date.now())/1000))
+:(roundActive?currentDuration:0);
+
+$("teacherTimer").textContent=formatTime(left);
+$("studentTimer").textContent=formatTime(left);
+
+if(isTeacher&&roundEndsAt&&Date.now()>=roundEndsAt&&roundActive){
+roundActive=false;
+db.ref(`rooms/${room}`).update({
+roundActive:false,
+status:"time up"
+});
+}
+
+if(roundEndsAt&&Date.now()>=roundEndsAt){
+if($("submitBtn"))$("submitBtn").disabled=true;
+}
+}
+
+tick();
+if(timerInterval)clearInterval(timerInterval);
+timerInterval=setInterval(tick,200);
+}
+
+const canvas=$("canvas");
+const ctx=canvas.getContext("2d");
+
+function setupCanvas(preserve=true){
+
+let saved=null;
+if(preserve&&canvas.width&&canvas.height){
+saved=canvas.toDataURL();
+}
+
+let r=canvas.getBoundingClientRect();
+if(!r.width||!r.height)return;
+
+let dpr=window.devicePixelRatio||1;
+canvas.width=Math.round(r.width*dpr);
+canvas.height=Math.round(r.height*dpr);
+
+ctx.setTransform(dpr,0,0,dpr,0,0);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,r.width,r.height);
+
+if(saved){
+let img=new Image();
+img.onload=()=>ctx.drawImage(img,0,0,r.width,r.height);
+img.src=saved;
+}else{
+history=[];
+}
+}
+
+function canvasPoint(e){
+let r=canvas.getBoundingClientRect();
+return{x:e.clientX-r.left,y:e.clientY-r.top};
+}
+
+function setTool(t){
+tool=t;
+$("pencilBtn").classList.toggle("tool-active",t==="pencil");
+$("eraserBtn").classList.toggle("tool-active",t==="eraser");
+canvas.style.cursor=t==="eraser"?"cell":"crosshair";
+}
+
+canvas.addEventListener("pointerdown",e=>{
+
+if(!roundActive||submitted)return;
+e.preventDefault();
+drawing=true;
+
+try{
+canvas.setPointerCapture(e.pointerId);
+}catch(err){}
+
+history.push(canvas.toDataURL());
+
+let p=canvasPoint(e);
+ctx.beginPath();
+ctx.moveTo(p.x,p.y);
+ctx.lineTo(p.x+.01,p.y+.01);
+
+ctx.lineWidth=tool==="eraser"
+?Math.max(18,Number($("brush").value)*2)
+:Number($("brush").value);
+
+ctx.lineCap="round";
+ctx.lineJoin="round";
+ctx.strokeStyle=tool==="eraser"?"#ffffff":$("color").value;
+ctx.stroke();
+});
+
+canvas.addEventListener("pointermove",e=>{
+
+if(!drawing||submitted)return;
+e.preventDefault();
+
+let p=canvasPoint(e);
+
+ctx.lineWidth=tool==="eraser"
+?Math.max(18,Number($("brush").value)*2)
+:Number($("brush").value);
+
+ctx.lineCap="round";
+ctx.lineJoin="round";
+ctx.strokeStyle=tool==="eraser"?"#ffffff":$("color").value;
+
+ctx.lineTo(p.x,p.y);
+ctx.stroke();
+});
+
+["pointerup","pointercancel","pointerleave"].forEach(ev=>{
+canvas.addEventListener(ev,()=>{
+drawing=false;
+ctx.beginPath();
+});
+});
+
+function clearCanvas(){
+ctx.save();
+ctx.setTransform(1,0,0,1,0,0);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.restore();
+history=[];
+}
+
+function undoDrawing(){
+
+if(!history.length)return;
+
+let img=new Image();
+let src=history.pop();
+
+img.onload=()=>{
+ctx.save();
+ctx.setTransform(1,0,0,1,0,0);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+ctx.restore();
+};
+
+img.src=src;
+}
+
+async function submitDrawing(){
+
+if(!studentId||!room||!roundActive||submitted)return;
+
+$("submitBtn").disabled=true;
+
+try{
+
+let data=canvas.toDataURL("image/jpeg",.65);
+
+await db.ref(`rooms/${room}/drawings/${studentId}`).set({
+name:studentName,
+image:data,
+submittedAt:firebase.database.ServerValue.TIMESTAMP,
+roundId:lastRoundId
+});
+
+submitted=true;
+$("message").textContent="Drawing submitted!";
+$("handsUp").classList.remove("hidden");
+$("nextBtn").classList.add("hidden");
+$("studentStatus").textContent=
+"Drawing submitted! Hands up and wait for the teacher.";
+
+}catch(e){
+$("submitBtn").disabled=false;
+alert("Submit failed: "+e.message);
+}
+}
+
+function studentNext(){
+
+if(!roundActive||!roundEndsAt||Date.now()>=roundEndsAt){
+alert("Wait for the teacher to start the next drawing first!");
+return;
+}
+
+submitted=false;
+$("handsUp").classList.add("hidden");
+$("nextBtn").classList.add("hidden");
+$("message").textContent="";
+$("submitBtn").disabled=false;
+clearCanvas();
+setTool("pencil");
+}
+
+function card(d){
+
+let el=document.createElement("div");
+el.className="drawing-card";
+
+let img=document.createElement("img");
+img.src=d.image||"";
+img.alt="Student drawing";
+
+let name=document.createElement("p");
+name.textContent=d.name||"Student";
+
+el.append(img,name);
+return el;
+}
+
+function renderGallery(drawings){
+
+let g=$("gallery");
+let fg=$("fullscreenGallery");
+
+g.innerHTML="";
+fg.innerHTML="";
+
+let vals=Object.values(drawings||{});
+
+if(!vals.length){
+g.innerHTML='<p class="small">No drawings submitted yet.</p>';
+fg.innerHTML='<div class="reveal-empty">No drawings submitted yet.</div>';
+return;
+}
+
+vals.forEach(d=>{
+
+if(revealed){
+g.append(card(d));
+fg.append(card(d));
+}else{
+
+let c=document.createElement("div");
+c.className="drawing-card";
+
+let placeholder=document.createElement("div");
+placeholder.style.cssText=
+"height:160px;background:#e9edfa;display:grid;place-items:center;font-size:36px";
+placeholder.textContent="🔒";
+
+let p=document.createElement("p");
+p.textContent="Hidden Drawing";
+
+c.append(placeholder,p);
+g.append(c);
+}
+});
+}
+
+async function revealDrawings(){
+
+if(!db||!room)return;
+
+revealed=true;
+await db.ref(`rooms/${room}/revealed`).set(true);
+
+let s=await db.ref(`rooms/${room}/drawings`).once("value");
+renderGallery(s.val()||{});
+openReveal();
+}
+
+function hideDrawings(){
+
+revealed=false;
+if(!db||!room)return;
+
+closeFullscreenReveal();
+
+db.ref(`rooms/${room}/revealed`).set(false);
+db.ref(`rooms/${room}/drawings`).once("value")
+.then(s=>renderGallery(s.val()||{}));
+}
+
+function openReveal(){
+$("revealScreen").classList.remove("hidden");
+
+if(document.documentElement.requestFullscreen){
+document.documentElement.requestFullscreen().catch(()=>{});
+}
+}
+
+function closeFullscreenReveal(){
+
+$("revealScreen").classList.add("hidden");
+
+if(document.fullscreenElement&&document.exitFullscreen){
+document.exitFullscreen().catch(()=>{});
+}
+}
+
+function listenForReveal(){
+db.ref(`rooms/${room}/revealed`).on("value",s=>{
+if(s.val()){
+$("studentStatus").textContent="🎉 Teacher is revealing the drawings!";
+}
+});
+}
+
+async function clearRoom(){
+
+if(!confirm("Clear drawings and reset this round?"))return;
+
+try{
+
+await db.ref(`rooms/${room}`).update({
+revealed:false,
+status:"waiting",
+roundActive:false,
+endsAt:0,
+drawings:{}
+});
+
+revealed=false;
+roundActive=false;
+closeFullscreenReveal();
+alert("Round cleared.");
+
+}catch(e){
+alert("Clear failed: "+e.message);
+}
+}
+
+window.addEventListener("resize",()=>{
+if(!$("studentDrawing").classList.contains("hidden")){
+setupCanvas(true);
+}
+});
+
+window.addEventListener("orientationchange",()=>{
+setTimeout(()=>{
+if(!$("studentDrawing").classList.contains("hidden")){
+setupCanvas(true);
+}
+},300);
 });
 
 initFirebase();
